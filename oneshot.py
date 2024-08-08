@@ -17,6 +17,8 @@ import csv
 from pathlib import Path
 from typing import Dict
 
+is_android: bool = hasattr(sys, 'getandroidapilevel')
+
 
 class NetworkAddress:
     def __init__(self, mac):
@@ -368,6 +370,43 @@ class ConnectionStatus:
         self.__init__()
 
 
+class AndroidNetwork:
+    def __init__(self):
+        self.enabled_scanning = 0
+
+    def storeAlwaysScanState(self):
+        "Stores Initial Wi-Fi 'always-scanning' state, so it can be restored on exit"
+
+        is_scanning_on = subprocess.check_output('settings get global wifi_scan_always_enabled', shell=True, text=True)
+        is_scanning_on = is_scanning_on.strip()
+
+        if is_scanning_on == "1":
+            self.enabled_scanning = 1
+
+    def disableWifi(self, forceDisable=False):
+        "Disable Wi-Fi connectivity on Android"
+
+        # This tricks the Android Wi-Fi scanner to temporarily stop
+        subprocess.run('ifconfig wlan0 down && ifconfig wlan0 up', shell=True)
+        subprocess.run('cmd -w wifi enable-scanning disabled', shell=True)
+
+        # Always scanning for networks (for location/service purposes) confuses wpa_supplicant
+        if self.enabled_scanning == 1 or forceDisable is True:
+            subprocess.run('cmd -w wifi set-scan-always-available disabled', shell=True)
+
+        time.sleep(2.5)
+
+    def enableWifi(self, forceEnable=False):
+        "Enable Wi-Fi connectivity on Android"
+
+        # Make the Android Wi-Fi scanner work again
+        subprocess.run('cmd -w wifi enable-scanning enabled', shell=True)
+        subprocess.run('cmd -w wifi start-scan', shell=True)
+
+        if self.enabled_scanning == 1 or forceEnable is True:
+            subprocess.run('cmd -w wifi set-scan-always-available enabled', shell=True)
+
+
 class BruteforceStatus:
     def __init__(self):
         self.start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -422,6 +461,8 @@ class Companion:
 
         self.pixie_creds = PixiewpsData()
         self.connection_status = ConnectionStatus()
+
+        self.android_network = AndroidNetwork()
 
         user_home = str(pathlib.Path.home())
         self.sessions_dir = f'{user_home}/.OneShot/sessions/'
@@ -617,12 +658,10 @@ class Companion:
         print('[i] PIN saved in {}'.format(filename))
 
     def __saveNetwork(self, bssid, essid, wpa_psk):
-        is_android: bool = hasattr(sys, 'getandroidapilevel')
-
         if is_android is True:
-            subprocess.run('svc wifi enable', shell=True, check=True)
+            self.android_network.enableWifi(forceEnable=True)
             subprocess.run(f'cmd -w wifi connect-network "{essid}" wpa2 "{wpa_psk}" -b "{bssid}"', shell=True)
-            subprocess.run('svc wifi disable', shell=True, check=True)
+            self.android_network.disableWifi(forceDIsable=True)
 
         print('[i] Access Point was saved to your network manager')
 
@@ -1217,7 +1256,14 @@ if __name__ == '__main__':
 
     while True:
         try:
+            android_network = AndroidNetwork()
             companion = Companion(args.interface, args.write, args.save, print_debug=args.verbose)
+
+            if is_android is True:
+                print("[*] Detected Android OS - temporarily disabling network settings")
+                android_network.storeAlwaysScanState()
+                android_network.disableWifi()
+
             if args.pbc:
                 companion.single_connection(pbc_mode=True)
             else:
@@ -1253,6 +1299,9 @@ if __name__ == '__main__':
             else:
                 print("\nAborting…")
                 break
+        finally:
+            if is_android is True:
+                android_network.enableWifi()
 
     if args.iface_down:
         ifaceUp(args.interface, down=True)
