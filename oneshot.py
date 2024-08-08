@@ -942,7 +942,9 @@ class WiFiScanner:
                 if result.group(1) == 'RSN':
                     sec = 'WPA/WPA2'
             elif sec == 'WPA2':
-                if result.group(1) == 'WPA':
+                if result.group(1) == "PSK SAE":
+                    sec = 'WPA2/WPA3'
+                elif result.group(1) == 'WPA':
                     sec = 'WPA/WPA2'
             networks[-1]['Security type'] = sec
 
@@ -979,6 +981,7 @@ class WiFiScanner:
             re.compile(r'(RSN):\t [*] Version: (\d+)'): handle_securityType,
             re.compile(r'(WPA):\t [*] Version: (\d+)'): handle_securityType,
             re.compile(r'WPS:\t [*] Version: (([0-9]*[.])?[0-9]+)'): handle_wps,
+            re.compile(r' [*] Authentication suites: (.+)'): handle_securityType,
             re.compile(r' [*] AP setup locked: (0x[0-9]+)'): handle_wpsLocked,
             re.compile(r' [*] Model: (.*)'): handle_model,
             re.compile(r' [*] Model Number: (.*)'): handle_modelNumber,
