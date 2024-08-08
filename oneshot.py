@@ -1044,7 +1044,7 @@ class WiFiScanner:
                 colored('Already stored', color='yellow')
             ))
         print('Networks list:')
-        print('{:<4} {:<18} {:<25} {:<8} {:<4} {:<27} {:<}'.format(
+        print('{:<4} {:<18} {:<25} {:<9} {:<4} {:<27} {:<}'.format(
             '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'WSC device name', 'WSC model'))
 
         network_list_items = list(network_list.items())
@@ -1055,7 +1055,7 @@ class WiFiScanner:
             model = '{} {}'.format(network['Model'], network['Model number'])
             essid = truncateStr(network['ESSID'], 25)
             deviceName = truncateStr(network['Device name'], 27)
-            line = '{:<4} {:<18} {:<25} {:<8} {:<4} {:<27} {:<}'.format(
+            line = '{:<4} {:<18} {:<25} {:<9} {:<4} {:<27} {:<}'.format(
                 number, network['BSSID'], essid,
                 network['Security type'], network['Level'],
                 deviceName, model
