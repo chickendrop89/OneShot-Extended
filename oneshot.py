@@ -1126,6 +1126,7 @@ Optional arguments:
 Advanced arguments:
     -d, --delay=<n>          : Set the delay between pin attempts [0]
     -w, --write              : Write AP credentials to the file on success
+    -s, --save               : Save the AP to network manager on success
     -F, --pixie-force        : Run Pixiewps with --force option (bruteforce full range)
     -X, --show-pixie-cmd     : Always print Pixiewps command
     --vuln-list=<filename>   : Use custom file with vulnerable devices list ['vulnwsc.txt']
@@ -1203,7 +1204,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-s', '--save',
         action='store_true',
-        help='Save the Access Point to your Network Manager on success'
+        help='Save the AP to network manager on success'
     )
     parser.add_argument(
         '--iface-down',
