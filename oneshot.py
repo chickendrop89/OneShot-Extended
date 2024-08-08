@@ -403,9 +403,10 @@ class BruteforceStatus:
 
 class Companion:
     """Main application part"""
-    def __init__(self, interface, save_result=False, print_debug=False):
+    def __init__(self, interface, save_result=False, save_to_network_manager=True, print_debug=False):
         self.interface = interface
         self.save_result = save_result
+        self.save_to_network_manager = save_to_network_manager
         self.print_debug = print_debug
 
         self.tempdir = tempfile.mkdtemp()
@@ -606,6 +607,7 @@ class Companion:
             if writeTableHeader:
                 csvWriter.writerow(['Date', 'BSSID', 'ESSID', 'WPS PIN', 'WPA PSK'])
             csvWriter.writerow([dateStr, bssid, essid, wps_pin, wpa_psk])
+
         print(f'[i] Credentials saved to {filename}.txt, {filename}.csv')
 
     def __savePin(self, bssid, pin):
@@ -613,6 +615,16 @@ class Companion:
         with open(filename, 'w') as file:
             file.write(pin)
         print('[i] PIN saved in {}'.format(filename))
+
+    def __saveNetwork(self, bssid, essid, wpa_psk):
+        is_android: bool = hasattr(sys, 'getandroidapilevel')
+
+        if is_android is True:
+            subprocess.run('svc wifi enable', shell=True, check=True) 
+            subprocess.run(f'cmd -w wifi connect-network "{essid}" wpa2 "{wpa_psk}" -b "{bssid}"', shell=True)
+            subprocess.run('svc wifi disable', shell=True, check=True)
+
+        print('[i] Access Point was saved to your network manager')
 
     def __prompt_wpspin(self, bssid):
         pins = self.generator.getSuggested(bssid)
@@ -715,6 +727,8 @@ class Companion:
             self.__credentialPrint(pin, self.connection_status.wpa_psk, self.connection_status.essid)
             if self.save_result:
                 self.__saveResult(bssid, self.connection_status.essid, pin, self.connection_status.wpa_psk)
+            if self.save_to_network_manager:
+                self.__saveNetwork(bssid, self.connection_status.essid, self.connection_status.wpa_psk)
             if not pbc_mode:
                 # Try to remove temporary PIN file
                 filename = self.pixiewps_dir + '{}.run'.format(bssid.replace(':', '').upper())
@@ -1145,6 +1159,11 @@ if __name__ == '__main__':
         help='Write credentials to the file on success'
         )
     parser.add_argument(
+        '-s', '--save',
+        action='store_true',
+        help='Save the Access Point to your Network Manager on success'
+    )
+    parser.add_argument(
         '--iface-down',
         action='store_true',
         help='Down network interface when the work is finished'
@@ -1198,7 +1217,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            companion = Companion(args.interface, args.write, print_debug=args.verbose)
+            companion = Companion(args.interface, args.write, args.save, print_debug=args.verbose)
             if args.pbc:
                 companion.single_connection(pbc_mode=True)
             else:
@@ -1214,7 +1233,7 @@ if __name__ == '__main__':
                     args.bssid = scanner.prompt_network()
 
                 if args.bssid:
-                    companion = Companion(args.interface, args.write, print_debug=args.verbose)
+                    companion = Companion(args.interface, args.write, args.save, print_debug=args.verbose)
                     if args.bruteforce:
                         companion.smart_bruteforce(args.bssid, args.pin, args.delay)
                     else:
