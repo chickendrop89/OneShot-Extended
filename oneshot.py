@@ -79,7 +79,7 @@ class NetworkAddress:
     def _int2mac(mac):
         mac = hex(mac).split('x')[-1].upper()
         mac = mac.zfill(12)
-        mac = ':'.join(mac[i:i+2] for i in range(0, 12, 2))
+        mac = ':'.join(mac[i:i + 2] for i in range(0, 12, 2))
         return mac
 
     def __repr__(self):
@@ -345,10 +345,10 @@ class PixiewpsData:
                 and self.e_hash1 and self.e_hash2)
 
     def get_pixie_cmd(self, full_range=False):
-        pixiecmd = "pixiewps --pke {} --pkr {} --e-hash1 {}"\
-                    " --e-hash2 {} --authkey {} --e-nonce {}".format(
-                    self.pke, self.pkr, self.e_hash1,
-                    self.e_hash2, self.authkey, self.e_nonce)
+        pixiecmd = "pixiewps --pke {} --pkr {} --e-hash1 {}" \
+            " --e-hash2 {} --authkey {} --e-nonce {}".format(
+                self.pke, self.pkr, self.e_hash1,
+                self.e_hash2, self.authkey, self.e_nonce)
         if full_range:
             pixiecmd += ' --force'
         return pixiecmd
@@ -496,32 +496,32 @@ class Companion:
                 print('[-] Error: wrong PIN code')
             elif 'Enrollee Nonce' in line and 'hexdump' in line:
                 self.pixie_creds.e_nonce = get_hex(line)
-                assert(len(self.pixie_creds.e_nonce) == 16*2)
+                assert (len(self.pixie_creds.e_nonce) == 16 * 2)
                 if pixiemode:
                     print('[P] E-Nonce: {}'.format(self.pixie_creds.e_nonce))
             elif 'DH own Public Key' in line and 'hexdump' in line:
                 self.pixie_creds.pkr = get_hex(line)
-                assert(len(self.pixie_creds.pkr) == 192*2)
+                assert (len(self.pixie_creds.pkr) == 192 * 2)
                 if pixiemode:
                     print('[P] PKR: {}'.format(self.pixie_creds.pkr))
             elif 'DH peer Public Key' in line and 'hexdump' in line:
                 self.pixie_creds.pke = get_hex(line)
-                assert(len(self.pixie_creds.pke) == 192*2)
+                assert (len(self.pixie_creds.pke) == 192 * 2)
                 if pixiemode:
                     print('[P] PKE: {}'.format(self.pixie_creds.pke))
             elif 'AuthKey' in line and 'hexdump' in line:
                 self.pixie_creds.authkey = get_hex(line)
-                assert(len(self.pixie_creds.authkey) == 32*2)
+                assert (len(self.pixie_creds.authkey) == 32 * 2)
                 if pixiemode:
                     print('[P] AuthKey: {}'.format(self.pixie_creds.authkey))
             elif 'E-Hash1' in line and 'hexdump' in line:
                 self.pixie_creds.e_hash1 = get_hex(line)
-                assert(len(self.pixie_creds.e_hash1) == 32*2)
+                assert (len(self.pixie_creds.e_hash1) == 32 * 2)
                 if pixiemode:
                     print('[P] E-Hash1: {}'.format(self.pixie_creds.e_hash1))
             elif 'E-Hash2' in line and 'hexdump' in line:
                 self.pixie_creds.e_hash2 = get_hex(line)
-                assert(len(self.pixie_creds.e_hash2) == 32*2)
+                assert (len(self.pixie_creds.e_hash2) == 32 * 2)
                 if pixiemode:
                     print('[P] E-Hash2: {}'.format(self.pixie_creds.e_hash2))
             elif 'Network Key' in line and 'hexdump' in line:
@@ -598,8 +598,8 @@ class Companion:
         dateStr = datetime.now().strftime("%d.%m.%Y %H:%M")
         with open(filename + '.txt', 'a', encoding='utf-8') as file:
             file.write('{}\nBSSID: {}\nESSID: {}\nWPS PIN: {}\nWPA PSK: {}\n\n'.format(
-                        dateStr, bssid, essid, wps_pin, wpa_psk
-                    )
+                dateStr, bssid, essid, wps_pin, wpa_psk
+            )
             )
         writeTableHeader = not os.path.isfile(filename + '.csv')
         with open(filename + '.csv', 'a', newline='', encoding='utf-8') as file:
@@ -620,7 +620,7 @@ class Companion:
         is_android: bool = hasattr(sys, 'getandroidapilevel')
 
         if is_android is True:
-            subprocess.run('svc wifi enable', shell=True, check=True) 
+            subprocess.run('svc wifi enable', shell=True, check=True)
             subprocess.run(f'cmd -w wifi connect-network "{essid}" wpa2 "{wpa_psk}" -b "{bssid}"', shell=True)
             subprocess.run('svc wifi disable', shell=True, check=True)
 
@@ -639,7 +639,7 @@ class Companion:
             while 1:
                 pinNo = input('Select the PIN: ')
                 try:
-                    if int(pinNo) in range(1, len(pins)+1):
+                    if int(pinNo) in range(1, len(pins) + 1):
                         pin = pins[int(pinNo) - 1]['pin']
                     else:
                         raise IndexError
@@ -869,15 +869,15 @@ class WiFiScanner:
         """Parsing iw scan results"""
         def handle_network(line, result, networks):
             networks.append(
-                    {
-                        'Security type': 'Unknown',
-                        'WPS': False,
-                        'WPS locked': False,
-                        'Model': '',
-                        'Model number': '',
-                        'Device name': ''
-                     }
-                )
+                {
+                    'Security type': 'Unknown',
+                    'WPS': False,
+                    'WPS locked': False,
+                    'Model': '',
+                    'Model number': '',
+                    'Device name': ''
+                }
+            )
             networks[-1]['BSSID'] = result.group(1).upper()
 
         def handle_essid(line, result, networks):
@@ -1017,7 +1017,7 @@ class WiFiScanner:
                 number, network['BSSID'], essid,
                 network['Security type'], network['Level'],
                 deviceName, model
-                )
+            )
             if (network['BSSID'], network['ESSID']) in self.stored:
                 print(colored(line, color='yellow'))
             elif network['WPS locked']:
@@ -1105,59 +1105,59 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='OneShotPin 0.0.2 (c) 2017 rofl0r, modded by drygdryg',
         epilog='Example: %(prog)s -i wlan0 -b 00:90:4C:C1:AC:21 -K'
-        )
+    )
 
     parser.add_argument(
         '-i', '--interface',
         type=str,
         required=True,
         help='Name of the interface to use'
-        )
+    )
     parser.add_argument(
         '-b', '--bssid',
         type=str,
         help='BSSID of the target AP'
-        )
+    )
     parser.add_argument(
         '-p', '--pin',
         type=str,
         help='Use the specified pin (arbitrary string or 4/8 digit pin)'
-        )
+    )
     parser.add_argument(
         '-K', '--pixie-dust',
         action='store_true',
         help='Run Pixie Dust attack'
-        )
+    )
     parser.add_argument(
         '-F', '--pixie-force',
         action='store_true',
         help='Run Pixiewps with --force option (bruteforce full range)'
-        )
+    )
     parser.add_argument(
         '-X', '--show-pixie-cmd',
         action='store_true',
         help='Always print Pixiewps command'
-        )
+    )
     parser.add_argument(
         '-B', '--bruteforce',
         action='store_true',
         help='Run online bruteforce attack'
-        )
+    )
     parser.add_argument(
         '--pbc', '--push-button-connect',
         action='store_true',
         help='Run WPS push button connection'
-        )
+    )
     parser.add_argument(
         '-d', '--delay',
         type=float,
         help='Set the delay between pin attempts'
-        )
+    )
     parser.add_argument(
         '-w', '--write',
         action='store_true',
         help='Write credentials to the file on success'
-        )
+    )
     parser.add_argument(
         '-s', '--save',
         action='store_true',
@@ -1167,7 +1167,7 @@ if __name__ == '__main__':
         '--iface-down',
         action='store_true',
         help='Down network interface when the work is finished'
-        )
+    )
     parser.add_argument(
         '--vuln-list',
         type=str,
@@ -1195,7 +1195,7 @@ if __name__ == '__main__':
         '-v', '--verbose',
         action='store_true',
         help='Verbose output'
-        )
+    )
 
     args = parser.parse_args()
 
