@@ -661,6 +661,9 @@ class Companion:
         print('[i] PIN saved in {}'.format(filename))
 
     def __saveNetwork(self, bssid, essid, wpa_psk):
+        from shutil import which
+
+        # Detect standard android system
         if is_android is True:
             self.android_network.enableWifi(forceEnable=True)
             subprocess.run(
@@ -669,6 +672,13 @@ class Companion:
                 shell=True
             )
             self.android_network.disableWifi(forceDisable=True)
+
+        # Detect NetworkManager
+        if which("nmcli"):
+            subprocess.run(
+                f'nmcli connection add type wifi con-name {essid} ssid {essid} wifi-sec.psk {wpa_psk} wifi-sec.key-mgmt wpa-psk',
+                shell=True
+            )
 
         print('[i] Access Point was saved to your network manager')
 
