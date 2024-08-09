@@ -442,7 +442,7 @@ class BruteforceStatus:
 
 class Companion:
     """Main application part"""
-    def __init__(self, interface, save_result=False, save_to_network_manager=True, print_debug=False):
+    def __init__(self, interface, save_result=False, save_to_network_manager=False, print_debug=False):
         self.interface = interface
         self.save_result = save_result
         self.save_to_network_manager = save_to_network_manager
