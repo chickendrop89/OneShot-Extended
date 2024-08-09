@@ -526,6 +526,9 @@ class Companion:
                 self.connection_status.last_m_message = n
                 print('[*] Sending WPS Message M{}…'.format(n))
             elif 'Received M' in line:
+                if "M2D" in line:
+                    print('[-] Received WPS Message M2D')
+                    die('[-] Error: AP is not ready yet, try later')
                 n = int(line.split('Received M')[1])
                 self.connection_status.last_m_message = n
                 print('[*] Received WPS Message M{}'.format(n))
