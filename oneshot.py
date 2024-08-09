@@ -661,7 +661,7 @@ class Companion:
         if is_android is True:
             self.android_network.enableWifi(forceEnable=True)
             subprocess.run(f'cmd -w wifi connect-network "{essid}" wpa2 "{wpa_psk}" -b "{bssid}"', shell=True)
-            self.android_network.disableWifi(forceDIsable=True)
+            self.android_network.disableWifi(forceDisable=True)
 
         print('[i] Access Point was saved to your network manager')
 
