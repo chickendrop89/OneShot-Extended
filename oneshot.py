@@ -911,6 +911,7 @@ class WiFiScanner:
                 {
                     'Security type': 'Unknown',
                     'WPS': False,
+                    'WPS version': '1.0',
                     'WPS locked': False,
                     'Model': '',
                     'Model number': '',
@@ -951,6 +952,15 @@ class WiFiScanner:
         def handle_wps(line, result, networks):
             networks[-1]['WPS'] = result.group(1)
 
+        def handle_wpsVersion(line, result, networks):
+            wps_ver = networks[-1]['WPS version']
+            wps_ver_filtered = result.group(1).replace("* Version2:", "")
+
+            if wps_ver_filtered == '2.0':
+                wps_ver = "2.0"
+
+            networks[-1]['WPS version'] = wps_ver
+
         def handle_wpsLocked(line, result, networks):
             flag = int(result.group(1), 16)
             if flag:
@@ -981,6 +991,7 @@ class WiFiScanner:
             re.compile(r'(RSN):\t [*] Version: (\d+)'): handle_securityType,
             re.compile(r'(WPA):\t [*] Version: (\d+)'): handle_securityType,
             re.compile(r'WPS:\t [*] Version: (([0-9]*[.])?[0-9]+)'): handle_wps,
+            re.compile(r' [*] Version2: (.+)'): handle_wpsVersion,
             re.compile(r' [*] Authentication suites: (.+)'): handle_securityType,
             re.compile(r' [*] AP setup locked: (0x[0-9]+)'): handle_wpsLocked,
             re.compile(r' [*] Model: (.*)'): handle_model,
@@ -1026,6 +1037,8 @@ class WiFiScanner:
             if color:
                 if color == 'green':
                     text = '\033[92m{}\033[00m'.format(text)
+                if color == 'dark_green':
+                    text = '\033[32m{}\033[00m'.format(text)
                 elif color == 'red':
                     text = '\033[91m{}\033[00m'.format(text)
                 elif color == 'yellow':
@@ -1037,15 +1050,16 @@ class WiFiScanner:
             return text
 
         if self.vuln_list:
-            print('Network marks: {1} {0} {2} {0} {3}'.format(
+            print('Network marks: {1} {0} {2} {0} {3} {0} {4}'.format(
                 '|',
-                colored('Possibly vulnerable', color='green'),
+                colored('Vulnerable model', color='green'),
+                colored('Vulnerable WPS ver.', color='dark_green'),
                 colored('WPS locked', color='red'),
                 colored('Already stored', color='yellow')
             ))
         print('Networks list:')
-        print('{:<4} {:<18} {:<25} {:<9} {:<4} {:<27} {:<}'.format(
-            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'WSC device name', 'WSC model'))
+        print('{:<4} {:<18} {:<25} {:<9} {:<4} {:<4} {:<27} {:<}'.format(
+            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'WPS Ver.', 'WSC device name', 'WSC model'))
 
         network_list_items = list(network_list.items())
         if args.reverse_scan:
@@ -1055,13 +1069,15 @@ class WiFiScanner:
             model = '{} {}'.format(network['Model'], network['Model number'])
             essid = truncateStr(network['ESSID'], 25)
             deviceName = truncateStr(network['Device name'], 27)
-            line = '{:<4} {:<18} {:<25} {:<9} {:<4} {:<27} {:<}'.format(
+            line = '{:<4} {:<18} {:<25} {:<9} {:<4} {:<4} {:<27} {:<}'.format(
                 number, network['BSSID'], essid,
                 network['Security type'], network['Level'],
-                deviceName, model
+                network['WPS version'], deviceName, model
             )
             if (network['BSSID'], network['ESSID']) in self.stored:
                 print(colored(line, color='yellow'))
+            elif network['WPS version'] == '1.0':
+                print(colored(line, color='dark_green'))
             elif network['WPS locked']:
                 print(colored(line, color='red'))
             elif self.vuln_list and (model in self.vuln_list):
