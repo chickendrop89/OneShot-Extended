@@ -954,7 +954,8 @@ class WiFiScanner:
             networks[-1]['Security type'] = sec
 
         def handle_wps(line, result, networks):
-            networks[-1]['WPS'] = result.group(1)
+            is_wps_enabled = bool(result.group(1))
+            networks[-1]['WPS'] = is_wps_enabled
 
         def handle_wpsVersion(line, result, networks):
             wps_ver = networks[-1]['WPS version']
