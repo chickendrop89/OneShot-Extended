@@ -734,8 +734,8 @@ class Companion:
         self.sendOnly('WPS_CANCEL')
         return False
 
-    def single_connection(self, bssid=None, pin=None, pixiemode=False, pbc_mode=False, showpixiecmd=False,
-                          pixieforce=False, store_pin_on_fail=False):
+    def single_connection(self, bssid=None, pin=None, pixiemode=False, showpixiecmd=False,
+                        pixieforce=False, pbc_mode=False, store_pin_on_fail=False):
         if not pin:
             if pixiemode:
                 try:
