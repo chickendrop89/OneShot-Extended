@@ -605,6 +605,8 @@ class Companion:
             print('[*] Received Identity Request')
         elif 'using real identity' in line:
             print('[*] Sending Identity Response…')
+        elif 'Network is down' in line:
+            print('[-] Warning: Interface was disconnected, waiting ...')
         elif pbc_mode and ('selected BSS ' in line):
             bssid = line.split('selected BSS ')[-1].split()[0].upper()
             self.connection_status.bssid = bssid
