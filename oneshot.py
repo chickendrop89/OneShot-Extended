@@ -658,7 +658,7 @@ class Companion:
 
     def __savePin(self, bssid, pin):
         filename = self.pixiewps_dir + '{}.run'.format(bssid.replace(':', '').upper())
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding='utf-8') as file:
             file.write(pin)
         print('[i] PIN saved in {}'.format(filename))
 
@@ -756,7 +756,7 @@ class Companion:
                 try:
                     # Try using the previously calculated PIN
                     filename = self.pixiewps_dir + '{}.run'.format(bssid.replace(':', '').upper())
-                    with open(filename, 'r') as file:
+                    with open(filename, 'r', encoding='utf-8') as file:
                         t_pin = file.readline().strip()
                         if input('[?] Use previously calculated PIN {}? [n/Y] '.format(t_pin)).lower() != 'n':
                             pin = t_pin
@@ -858,7 +858,7 @@ class Companion:
             # Trying to restore previous session
             try:
                 filename = self.sessions_dir + '{}.run'.format(bssid.replace(':', '').upper())
-                with open(filename, 'r') as file:
+                with open(filename, 'r', encoding='utf-8') as file:
                     if input('[?] Restore previous session for {}? [n/Y] '.format(bssid)).lower() != 'n':
                         mask = file.readline().strip()
                     else:
@@ -883,7 +883,7 @@ class Companion:
         except KeyboardInterrupt:
             print("\nAborting…")
             filename = self.sessions_dir + '{}.run'.format(bssid.replace(':', '').upper())
-            with open(filename, 'w') as file:
+            with open(filename, 'w', encoding='utf-8') as file:
                 file.write(self.bruteforce.mask)
             print('[i] Session saved in {}'.format(filename))
             if args.loop:
