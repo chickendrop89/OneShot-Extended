@@ -1079,7 +1079,7 @@ class WiFiScanner:
             ))
         print('Networks list:')
         print('{:<4} {:<18} {:<25} {:<9} {:<4} {:<4} {:<27} {:<}'.format(
-            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'WPS Ver.', 'WSC device name', 'WSC model'))
+            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'Ver.', 'WSC device name', 'WSC model'))
 
         network_list_items = list(network_list.items())
         if args.reverse_scan:
