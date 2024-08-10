@@ -1056,13 +1056,13 @@ class WiFiScanner:
             """Returns colored text"""
             if color:
                 if color == 'green':
-                    text = '\033[92m{}\033[00m'.format(text)
+                    text = '\033[1m\033[92m{}\033[00m'.format(text)
                 if color == 'dark_green':
                     text = '\033[32m{}\033[00m'.format(text)
                 elif color == 'red':
-                    text = '\033[91m{}\033[00m'.format(text)
+                    text = '\033[1m\033[91m{}\033[00m'.format(text)
                 elif color == 'yellow':
-                    text = '\033[93m{}\033[00m'.format(text)
+                    text = '\033[1m\033[93m{}\033[00m'.format(text)
                 else:
                     return text
             else:
