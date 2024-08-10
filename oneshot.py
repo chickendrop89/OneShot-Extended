@@ -1039,6 +1039,7 @@ class WiFiScanner:
 
         # Putting a list of networks in a dictionary, where each key is a network number in list of networks
         network_list = {(i + 1): network for i, network in enumerate(networks)}
+        network_list_items = list(network_list.items())
 
         # Printing scanning results as table
         def truncateStr(s, length, postfix='…'):
@@ -1077,11 +1078,29 @@ class WiFiScanner:
                 colored('WPS locked', color='red'),
                 colored('Already stored', color='yellow')
             ))
-        print('Networks list:')
-        print('{:<4} {:<18} {:<25} {:<9} {:<4} {:<4} {:<27} {:<}'.format(
-            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'Ver.', 'WSC device name', 'WSC model'))
 
-        network_list_items = list(network_list.items())
+        def entryMaxLength(item):
+            """Calculates max length of network_list_items entry"""
+            return max(len(entry[1][item]) for entry in network_list_items) + 1
+
+        # Used to calculate the max width of a collum in the network list table
+        columm_lengths = {
+                "#": 4,
+                "sec": 9,
+                "bssid": 18,
+                "essid": entryMaxLength('ESSID'),
+                "name": entryMaxLength('Device name'),
+                "model": entryMaxLength('Model')
+        }
+
+        row = '{:<{#}} {:<{bssid}} {:<{essid}} {:<{sec}} {:<{#}} {:<{#}} {:<{name}} {:<{model}}'
+
+        print('Networks list:')
+        print(row.format(
+            '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'Ver.', 'WSC name', 'WSC model',
+            **columm_lengths
+        ))
+
         if args.reverse_scan:
             network_list_items = network_list_items[::-1]
         for n, network in network_list_items:
@@ -1089,10 +1108,11 @@ class WiFiScanner:
             model = '{} {}'.format(network['Model'], network['Model number'])
             essid = truncateStr(network['ESSID'], 25)
             deviceName = truncateStr(network['Device name'], 27)
-            line = '{:<4} {:<18} {:<25} {:<9} {:<4} {:<4} {:<27} {:<}'.format(
+            line = row.format(
                 number, network['BSSID'], essid,
                 network['Security type'], network['Level'],
-                network['WPS version'], deviceName, model
+                network['WPS version'], deviceName, model,
+                **columm_lengths
             )
             if (network['BSSID'], network['ESSID']) in self.stored:
                 print(colored(line, color='yellow'))
