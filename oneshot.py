@@ -23,40 +23,6 @@ class Companion:
         if not os.path.exists(pixiewps_dir):
             os.makedirs(pixiewps_dir)
 
-def usage():
-    return """
-OneShotPin 0.0.2 (c) 2017 rofl0r, modded by drygdryg
-
-%(prog)s <arguments>
-
-Required arguments:
-    -i, --interface=<wlan0>  : Name of the interface to use
-
-Optional arguments:
-    -b, --bssid=<mac>        : BSSID of the target AP
-    -p, --pin=<wps pin>      : Use the specified pin (arbitrary string or 4/8 digit pin)
-    -K, --pixie-dust         : Run Pixie Dust attack
-    -B, --bruteforce         : Run online bruteforce attack
-    --push-button-connect    : Run WPS push button connection
-
-Advanced arguments:
-    -d, --delay=<n>          : Set the delay between pin attempts [0]
-    -w, --write              : Write AP credentials to the file on success
-    -s, --save               : Save the AP to network manager on success
-    -F, --pixie-force        : Run Pixiewps with --force option (bruteforce full range)
-    -X, --show-pixie-cmd     : Always print Pixiewps command
-    --vuln-list=<filename>   : Use custom file with vulnerable devices list ['vulnwsc.txt']
-    --iface-down             : Down network interface when the work is finished
-    -l, --loop               : Run in a loop
-    -r, --reverse-scan       : Reverse order of networks in the list of networks. Useful on small displays
-    --mtk-wifi               : Activate MediaTek Wi-Fi interface driver on startup and deactivate it on exit
-                               (for internal Wi-Fi adapters implemented in MediaTek SoCs). Turn off Wi-Fi in the system settings before using this.
-    -v, --verbose            : Verbose output
-
-Example:
-    %(prog)s -i wlan0 -b 00:90:4C:C1:AC:21 -K
-"""
-
 if __name__ == '__main__':
     args = src.args.parseArgs()
 
