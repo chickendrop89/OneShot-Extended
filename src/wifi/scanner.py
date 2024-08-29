@@ -239,7 +239,7 @@ class WiFiScanner:
                 print(colored(line, color='dark_green'))
             elif network['WPS locked']:
                 print(colored(line, color='red'))
-            elif self.VULN_LIST and (model in self.VULN_LIST):
+            elif self.VULN_LIST and (model in self.VULN_LIST) or (device_name in self.VULN_LIST):
                 print(colored(line, color='green'))
             else:
                 print(line)
