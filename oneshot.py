@@ -47,6 +47,9 @@ if __name__ == '__main__':
         try:
             android_network = src.wifi.android.AndroidNetwork()
 
+            if args.clear:
+                os.system("clear")
+
             if src.utils.isAndroid is True:
                 print('[*] Detected Android OS - temporarily disabling network settings')
                 android_network.storeAlwaysScanState()

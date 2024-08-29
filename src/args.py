@@ -80,6 +80,11 @@ def parseArgs():
         help='Run in a loop'
     )
     parser.add_argument(
+        '-c', '--clear',
+        action='store_true',
+        help='Clear the screen on every wi-fi scan'
+    )
+    parser.add_argument(
         '-r', '--reverse-scan',
         action='store_true',
         help='Reverse order of networks in the list of networks. Useful on small displays'

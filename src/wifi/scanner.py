@@ -6,6 +6,8 @@ import subprocess
 
 import src.args
 
+args = src.args.parseArgs()
+
 class WiFiScanner:
     """Handles parsing scan results and table"""
 
@@ -155,8 +157,6 @@ class WiFiScanner:
         network_list = {(i + 1): network for i, network in enumerate(networks)}
         network_list_items = list(network_list.items())
 
-        args = src.args.parseArgs()
-
         # Printing scanning results as table
         def truncateStr(s: str, length: int, postfix='…'):
             """
@@ -255,6 +255,8 @@ class WiFiScanner:
             try:
                 network_no = input('Select target (press Enter to refresh): ')
                 if network_no.lower() in ('r', '0', ''):
+                    if args.clear:
+                        os.system("clear")
                     return self.promptNetwork()
                 elif int(network_no) in networks.keys():
                     return networks[int(network_no)]['BSSID']
