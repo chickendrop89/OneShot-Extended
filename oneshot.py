@@ -46,11 +46,11 @@ if __name__ == '__main__':
     while True:
         try:
             android_network = src.wifi.android.AndroidNetwork()
-            
-            connection = src.wps.connection.Initaliaze(
-                args.interface, args.write, args.save, print_debug=args.verbose
+
+            connection = src.wps.connection.Initialize(
+                args.interface, args.write, args.save, args.verbose
             )
-            
+
             bruteforce_connection = src.wps.bruteforce.Initialize(
                 args.interface
             )

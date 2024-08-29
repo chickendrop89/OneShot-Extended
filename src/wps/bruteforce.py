@@ -56,7 +56,7 @@ class Initialize:
         self.BRUTEFORCE_STATUS = BruteforceStatus()
         self.CONNECTION_STATUS = src.wps.connection.ConnectionStatus()
         self.GENERATOR  = src.wps.generator.WPSpin()
-        self.CONNECTION = src.wps.connection.Initaliaze(
+        self.CONNECTION = src.wps.connection.Initialize(
             interface
         )
 

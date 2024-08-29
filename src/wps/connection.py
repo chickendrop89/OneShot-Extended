@@ -28,19 +28,17 @@ class ConnectionStatus:
     def clear(self):
         self.__init__()
 
-class Initaliaze:
+class Initialize:
     """WPS connection"""
 
-    def __init__(self, interface: str, write_result: bool, save_result: bool, print_debug: bool = False):
+    def __init__(self, interface: str, write_result: bool = False, save_result: bool = False, print_debug: bool = False):
         self.INTERFACE    = interface
         self.WRITE_RESULT = write_result
         self.SAVE_RESULT  = save_result
         self.PRINT_DEBUG  = print_debug
 
         self.CONNECTION_STATUS = ConnectionStatus()
-        self.GENERATOR    = src.wps.generator.WPSpin()
         self.PIXIE_CREDS  = src.wps.pixiewps.Data()
-        self.SAVE         = src.wifi.save.Save()
 
         self.TEMPDIR = tempfile.mkdtemp()
 
@@ -56,8 +54,7 @@ class Initaliaze:
         self.RETSOCK.bind(self.RES_SOCKET_FILE)
 
 
-    @staticmethod
-    def __explainWpasNotOkStatus(command: str, respond: str):
+    def __explainWpasNotOkStatus(self, command: str, respond: str):
         if command.startswith(('WPS_REG', 'WPS_PBC')):
             if respond == 'UNKNOWN COMMAND':
                 return ('[!] It looks like your wpa_supplicant is compiled without WPS protocol support. '
@@ -218,6 +215,8 @@ class Initaliaze:
     def singleConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, showpixiecmd: bool = False, pixieforce: bool = False,
                         pbc_mode: bool = False, store_pin_on_fail: bool = False):
         pixiewps_dir = src.utils.PIXIEWPS_DIR
+        generator    = src.wps.generator.WPSpin()
+        save         = src.wifi.save.Save()
 
         if not pin:
             if pixiemode:
@@ -231,10 +230,10 @@ class Initaliaze:
                         else:
                             raise FileNotFoundError
                 except FileNotFoundError:
-                    pin = self.GENERATOR.getLikely(bssid) or '12345670'
+                    pin = generator.getLikely(bssid) or '12345670'
             elif not pbc_mode:
                 # If not pixiemode, ask user to select a pin from the list
-                pin = self.GENERATOR.promptPin(bssid) or '12345670'
+                pin = generator.promptPin(bssid) or '12345670'
 
         if pbc_mode:
             self.wpsConnection(bssid, pbc_mode=pbc_mode)
@@ -245,7 +244,7 @@ class Initaliaze:
                 self.wpsConnection(bssid, pin, pixiemode)
             except KeyboardInterrupt:
                 print('\nAborting…')
-                self.SAVE.write_pin(bssid, pin)
+                save.write_pin(bssid, pin)
                 return False
         else:
             self.wpsConnection(bssid, pin, pixiemode)
@@ -253,9 +252,9 @@ class Initaliaze:
         if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
             self.__credentialPrint(pin, self.CONNECTION_STATUS.WPA_PSK, self.CONNECTION_STATUS.ESSID)
             if self.WRITE_RESULT:
-                self.SAVE.write_result(bssid, self.CONNECTION_STATUS.ESSID, pin, self.CONNECTION_STATUS.WPA_PSK)
+                save.write_result(bssid, self.CONNECTION_STATUS.ESSID, pin, self.CONNECTION_STATUS.WPA_PSK)
             if self.SAVE_RESULT:
-                self.SAVE.add_network(bssid, self.CONNECTION_STATUS.ESSID, self.CONNECTION_STATUS.WPA_PSK)
+                save.add_network(bssid, self.CONNECTION_STATUS.ESSID, self.CONNECTION_STATUS.WPA_PSK)
             if not pbc_mode:
                 # Try to remove temporary PIN file
                 filename = pixiewps_dir + f'{bssid.replace(":", "").upper()}.run'
@@ -276,7 +275,7 @@ class Initaliaze:
         else:
             if store_pin_on_fail:
                 # Saving Pixiewps calculated PIN if can't connect
-                self.SAVE.write_pin(bssid, pin)
+                save.write_pin(bssid, pin)
             return False
 
     def wpsConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, pbc_mode: bool = False, verbose: bool = None):
