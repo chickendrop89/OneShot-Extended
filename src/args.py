@@ -71,7 +71,7 @@ def parseArgs():
     parser.add_argument(
         '--vuln-list',
         type=str,
-        default=os.path.dirname(os.path.realpath(__file__)) + '/vulnwsc.txt',
+        default=os.path.dirname(__file__) + '/../vulnwsc.txt',
         help='Use custom file with vulnerable devices list'
     )
     parser.add_argument(
