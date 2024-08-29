@@ -7,6 +7,7 @@ from pathlib import Path
 import src.wifi.android
 import src.wifi.scanner
 import src.wps.connection
+import src.wps.bruteforce
 import src.utils
 import src.args
 
@@ -45,9 +46,13 @@ if __name__ == '__main__':
     while True:
         try:
             android_network = src.wifi.android.AndroidNetwork()
-
+            
             connection = src.wps.connection.Initaliaze(
                 args.interface, args.write, args.save, print_debug=args.verbose
+            )
+            
+            bruteforce_connection = src.wps.bruteforce.Initialize(
+                args.interface
             )
 
             if src.utils.isAndroid is True:
@@ -72,7 +77,7 @@ if __name__ == '__main__':
 
                 if args.bssid:
                     if args.bruteforce:
-                        connection.smartBruteforce(args.bssid, args.pin, args.delay)
+                        bruteforce_connection.smartBruteforce(args.bssid, args.pin, args.delay)
                     else:
                         connection.singleConnection(args.bssid, args.pin, args.pixie_dust, args.show_pixie_cmd, args.pixie_force)
             if not args.loop:

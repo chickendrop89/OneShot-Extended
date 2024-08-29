@@ -49,14 +49,16 @@ class BruteforceStatus:
     def clear(self):
         self.__init__()
 
-class Bruteforce:
+class Initialize:
     """Handles bruteforce"""
 
-    def __init__(self):
+    def __init__(self, interface: str):
         self.BRUTEFORCE_STATUS = BruteforceStatus()
         self.CONNECTION_STATUS = src.wps.connection.ConnectionStatus()
-        self.CONNECTION = src.wps.connection.Initaliaze
         self.GENERATOR  = src.wps.generator.WPSpin()
+        self.CONNECTION = src.wps.connection.Initaliaze(
+            interface
+        )
 
     def __firstHalfBruteforce(self, bssid: str, f_half: str, delay: float = None):
         """
