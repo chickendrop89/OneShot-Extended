@@ -10,26 +10,22 @@ import src.wps.connection
 import src.utils
 import src.args
 
-class Companion:
-    """Main application part"""
-
-    def __init__(self):
-        pixiewps_dir = src.utils.PIXIEWPS_DIR
-        sessions_dir = src.utils.SESSIONS_DIR
-
-        if not os.path.exists(sessions_dir):
-            os.makedirs(sessions_dir)
-
-        if not os.path.exists(pixiewps_dir):
-            os.makedirs(pixiewps_dir)
-
 if __name__ == '__main__':
-    args = src.args.parseArgs()
-
+    # Python 3.8
     if sys.hexversion < 0x030800F0:
         src.utils.die('The program requires Python 3.8 and above')
     if os.getuid() != 0:
         src.utils.die('Run it as root')
+
+    pixiewps_dir = src.utils.PIXIEWPS_DIR
+    sessions_dir = src.utils.SESSIONS_DIR
+    args = src.args.parseArgs()
+
+    if not os.path.exists(sessions_dir):
+        os.makedirs(sessions_dir)
+
+    if not os.path.exists(pixiewps_dir):
+        os.makedirs(pixiewps_dir)
 
     if args.mtk_wifi:
         wmtWifi_device = Path('/dev/wmtWifi')
