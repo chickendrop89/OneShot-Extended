@@ -215,7 +215,6 @@ class WiFiScanner:
 
         row = '{:<{#}} {:<{bssid}} {:<{essid}} {:<{sec}} {:<{#}} {:<{#}} {:<{name}} {:<{model}}'
 
-        print('Networks list:')
         print(row.format(
             '#', 'BSSID', 'ESSID', 'Sec.', 'PWR', 'Ver.', 'WSC name', 'WSC model',
             **columm_lengths
