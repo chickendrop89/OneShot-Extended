@@ -205,7 +205,7 @@ class WiFiScanner:
         # Used to calculate the max width of a collum in the network list table
         columm_lengths = {
             '#': 4,
-            'sec': 9,
+            'sec': entryMaxLength('Security type'),
             'bssid': 18,
             'essid': entryMaxLength('ESSID'),
             'name': entryMaxLength('Device name'),
