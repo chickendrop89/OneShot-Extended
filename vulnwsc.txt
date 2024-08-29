@@ -55,7 +55,7 @@ DIR-457
 DIR-501
 DIR-600
 DIR-615 Rev D+ H
-DIR-615  Rev. B
+DIR-615 Rev. B
 DIR-635 Rev B
 DIR-645
 DIR-652
@@ -239,7 +239,7 @@ W 724V
 TC8305C
 TD5130
 TG-797n
-"""iRouteur"" 1104-W"
+iRouteur 1104-W
 APDK71
 N301RT
 Archer C2
@@ -391,14 +391,14 @@ Wireless Access Point .
 Wireless Router 123456
 Wireless Router RTL8xxx EV-2009-02-06
 Wireless Router Wireless Router
-Wireless WPS Router <#ZVMODELVZ#>
+Wireless WPS Router
 Wireless WPS Router RT-N10E
 Wireless WPS Router RT-N10LX
 Wireless WPS Router RT-N12E
 Wireless WPS Router RT-N12LX
 WN3000RP V3
 WN-200R WN-200R
-WPS Router (5G) RT-N65U
+WPS Router RT-N65U
 WPS Router DSL-AC51
 WPS Router DSL-AC52U
 WPS Router DSL-AC55U
@@ -437,61 +437,60 @@ ZyXEL NBG-416N AP Router NBG-416N
 ZyXEL NBG-418N AP Router
 ZyXEL NBG-418N AP Router NBG-418N
 ZyXEL Wireless AP Router NBG-417N
-#below possibly invulnerable
 AirLive	WN-200R
-Alfa Network	AC1200R
-Alfa Network	AIP-W525h
-Amped Wireless	SR10000
-Arris	DG1670AB2
-Arris	TG1672
-Arris	TG1682G
-Arris	TG852G
-Arris	TG862A
-Arris	TG862G
-Asus	RT-AC66U
-Asus	RT-AC68U
-Asus	RT-N10E
-Asus	RT-N12E
-Asus	RT-N15
-Asus	RT-N56U
-Asus	RT-N66U
-Beeline (SERCOMM)	SmartBox
-Belkin	F5D8236-4
-Belkin	F6D4230-4
-Belkin	F7D1301
-Belkin	F7D5301
-Belkin	F9K1010
-Belkin	F9K1102
-Belkin	F9K1103
-Belkin	F9K1105
-Belkin	F9K1110
+Alfa Network AC1200R
+Alfa Network AIP-W525h
+Amped Wireless SR10000
+Arris DG1670AB2
+Arris TG1672
+Arris TG1682G
+Arris TG852G
+Arris TG862A
+Arris TG862G
+Asus RT-AC66U
+Asus RT-AC68U
+Asus RT-N10E
+Asus RT-N12E
+Asus RT-N15
+Asus RT-N56U
+Asus RT-N66U
+Beelin SmartBox
+Belkin F5D8236-4
+Belkin F6D4230-4
+Belkin F7D1301
+Belkin F7D5301
+Belkin F9K1010
+Belkin F9K1102
+Belkin F9K1103
+Belkin F9K1105
+Belkin F9K1110
 Billion	BiPac 7800N
 Buffalo	WBMR-HP-GN
-Cisco	DPC3939
-Cisco	DPC3941T
-Compal	CBN-106-145-065
-Compal	CH6640E
-D-Link	DAP 1520
-D-Link	DIR-501
-D-Link	DIR-605L
-D-Link	DIR-610N
-D-Link	DIR-615
-D-Link	DIR-626L
-D-Link	DIR-636L
-D-Link	DIR-655
-D-Link	DSL-2740E
-D-Link	GO-RT-N150
-Edimax	FON 2303B
-Encore	ENHWI-3GN3
-EnGenius	ESR6650
-Hitron	CGN2-ROG
-Hitron	CGN3-ACR
-Hitron	CGN3-ROG
-Hitron	CVE30360
-Huawei	HG532e
-Huawei	HG532s
-Huawei	HG566a
-Intellinet	Wireless 300N 3G
+Cisco DPC3939
+Cisco DPC3941T
+Compal CBN-106-145-065
+Compal CH6640E
+D-Link DAP 1520
+D-Link DIR-501
+D-Link DIR-605L
+D-Link DIR-610N
+D-Link DIR-615
+D-Link DIR-626L
+D-Link DIR-636L
+D-Link DIR-655
+D-Link DSL-2740E
+D-Link GO-RT-N150
+Edimax FON 2303B
+Encore ENHWI-3GN3
+EnGenius ESR6650
+Hitron CGN2-ROG
+Hitron CGN3-ACR
+Hitron CGN3-ROG
+Hitron CVE30360
+Huawei HG532e
+Huawei HG532s
+Huawei HG566a
+Intellinet Wireless 300N 3G
 Linksys	E1000
 Linksys	E1700
 Linksys	E2500
@@ -503,8 +502,8 @@ Linksys	WRT110
 Linksys	WRT160N
 Linksys	WRT1900AC
 Linksys	WRT310N
-Mitrastar	HGW-2501GN-R2
-Motorola	SBG6580
+Mitrastar HGW-2501GN-R2
+Motorola SBG6580
 NETGEAR	C3700
 NETGEAR	DGN1000
 NETGEAR	EX2700
@@ -526,18 +525,18 @@ NETGEAR	WNDR3800
 NETGEAR	WNDR4300
 NETGEAR	WNR1000
 NETGEAR	WNR2000
-Pace	4111N
+Pace 4111N
 Sitecom	WLM-4600
 SMC	SMCD3GNV
-Speedport	W 921V
-Speedport	W724V
-Speedport (SERCOMM)	W 724V
+Speedport W 921V
+Speedport W724V
+Speedport W 724V
 Technicolor	TC8305C
 Technicolor	TD5130
 Technicolor	TG-797n
-Teldat	"""iRouteur"" 1104-W"
-TI (Texas Instruments?)	APDK71
-Totolink	N301RT
+Teldat iRouteur 1104-W
+TI APDK71
+Totolink N301RT
 TP-Link	Archer C2
 TP-Link	Archer C20i
 TP-LInk	Archer C5
@@ -552,89 +551,87 @@ TP-Link	TL-WR720N
 TP-Link	TL-WR740N
 TP-Link	TL-WR841HP
 TP-Link	TL-WR841N
-TRENDnet	TEW-650AP
-TRENDnet	TEW-691GR
-TRENDnet	TEW-731BR
+TRENDnet TEW-650AP
+TRENDnet TEW-691GR
+TRENDnet TEW-731BR
 ZTE	ZXDSL 931VII
-ZyXEL	C1000Z
-ZyXEL	Keenetic
-ZyXEL	NBG-418N
-ZyXEL	P-2812HNU-F3
-ZyXEL	P-660HN-T1A
-ZyXEL	P-660W-T1
-ZyXEL	PK5001z
-ZyXEL	VMG3312-B10A
-ZyXEL	VMG3312-B10B
-ZyXEL	VMG5313-B30
-##routerscan
-TP-Link Archer_A9 1.0 [Pixie Dust]
-TP-Link Archer A2 5.0 [Pixie Dust]
-TP-Link Archer A5 4.0 [Pixie Dust]
-TP-Link Archer C2 1.0 [Pixie Dust]
-TP-Link Archer C2 3.0 [Pixie Dust]
-TP-Link Archer C5 4.0 [Pixie Dust]
-TP-Link Archer C6U 1.0.0 [Pixie Dust]
-TP-Link Archer C20 1.0 [Pixie Dust]
-TP-Link Archer C20 4.0 [Pixie Dust]
-TP-Link Archer C20 5.0 [Pixie Dust]
-TP-Link Archer C50 1.0 [Pixie Dust]
-TP-Link Archer C50 3.0 [Pixie Dust]
-TP-Link Archer C50 4.0 [Pixie Dust]
-TP-Link Archer C50 5.0 [Pixie Dust]
-TP-Link Archer C50 6.0 [Pixie Dust]
-TP-Link Archer MR200 1.0 [Pixie Dust]
-TP-Link Archer MR200 4.0 [Pixie Dust]
-TP-Link Archer MR200 5.0 [Pixie Dust]
-TP-Link Archer VR300 1.20 [Pixie Dust]
-TP-Link Archer VR400 3.0 [Pixie Dust]
-TP-Link TD-W8151N RT2860 [Pixie Dust]
-TP-Link TD-W8901N RT2860 [Pixie Dust]
-TP-Link TD-W8951ND RT2860 [Pixie Dust]
-TP-Link TD-W9960 1.0 [Pixie Dust]
-TP-Link TD-W9960 1.20 [Pixie Dust]
-TP-Link TD-W9960v 1.0 [Pixie Dust]
-TP-Link TD-W8968 2.0 [Pixie Dust]
-TP-Link TL-MR3020 3.0 [Pixie Dust]
-TP-Link TL-MR3420 5.0 [Pixie Dust]
-TP-Link TL-MR6400 3.0 [Pixie Dust]
-TP-Link TL-MR6400 4.0 [Pixie Dust]
-TP-Link TL-WA855RE 4.0 [Pixie Dust]
-TP-Link TL-WR840N 4.0 [Pixie Dust]
-TP-Link TL-WR840N 5.0 [Pixie Dust]
-TP-Link TL-WR840N 6.0 [Pixie Dust]
-TP-Link TL-WR841N 13.0 [Pixie Dust]
-TP-Link TL-WR841N 14.0 [Pixie Dust]
-TP-Link TL-WR841HP 5.0 [Pixie Dust]
-TP-Link TL-WR842N 5.0 [Pixie Dust]
-TP-Link TL-WR845N 3.0 [Pixie Dust]
-TP-Link TL-WR845N 4.0 [Pixie Dust]
-TP-Link TL-WR850N 1.0 [Pixie Dust]
-TP-Link TL-WR850N 2.0 [Pixie Dust]
-TP-Link TL-WR850N 3.0 [Pixie Dust]
-TP-Link TL-WR1042N EV-2010-09-20 [Pixie Dust]
-D-Link N Router GO-RT-N150 [Pixie Dust]
-D-Link Router DIR-605L [Pixie Dust]
-D-Link Router DIR-615H1 [Pixie Dust]
-D-Link Router DIR-655 [Pixie Dust]
-D-Link Router DIR-809 [Pixie Dust]
-DIR-300 [PIN код алгоритма D-Link Sequence (/wpsg MAC)
-ASUS [WPS-пин или Pixie Dust, также ASUS PIN из /wpsg MAC]
-Netgear AP EV-2012-08-04 [Pixie Dust]
-NETGEAR Wireless Access Point R6220 [Pixie Dust]
-NETGEAR Wireless Access Point R6260 [Pixie Dust]
-ZyXEL NBG-416N AP Router [Pixie Dust]
-ZyXEL NBG-418N AP Router [Pixie Dust]
-ZyXEL NBG-418N AP Router NBG-418N [Pixie Dust]
-ZyXEL Wireless AP Router NBG-417N [Pixie Dust]
-Zyxel [открываются пустым пинкодом или Pixie Dust]
-Huawei Wireless Access Point RT2860 [Pixie Dust]
-Linksys Wireless Access Point EA7500 [Pixie Dust]
-Linksys Wireless Router WRT110 [Pixie Dust]
-Tenda 123456 [Pixie Dust]
-Tenda [Pixie Dust]
-Belkin AP EV-2012-09-01 [Pixie Dust]
-Trendnet router TEW-625br [Pixie Dust]
-Trendnet router TEW-651br [Pixie Dust]
-ZTE [Возможен пустой пинкод]
-Sitecom Wireless Router 300N X2 300N [Pixie Dust]
-Netis [Возможно сработает Pixie Dust]
+ZyXEL C1000Z
+ZyXEL Keenetic
+ZyXEL NBG-418N
+ZyXEL P-2812HNU-F3
+ZyXEL P-660HN-T1A
+ZyXEL P-660W-T1
+ZyXEL PK5001z
+ZyXEL VMG3312-B10A
+ZyXEL VMG3312-B10B
+ZyXEL VMG5313-B30
+TP-Link Archer_A9 1.0
+TP-Link Archer A2 5.0
+TP-Link Archer A5 4.0
+TP-Link Archer C2 1.0
+TP-Link Archer C2 3.0
+TP-Link Archer C5 4.0
+TP-Link Archer C6U 1.0.0
+TP-Link Archer C20 1.0
+TP-Link Archer C20 4.0
+TP-Link Archer C20 5.0
+TP-Link Archer C50 1.0
+TP-Link Archer C50 3.0
+TP-Link Archer C50 4.0
+TP-Link Archer C50 5.0
+TP-Link Archer C50 6.0
+TP-Link Archer MR200 1.0
+TP-Link Archer MR200 4.0
+TP-Link Archer MR200 5.0
+TP-Link Archer VR300 1.20
+TP-Link Archer VR400 3.0
+TP-Link TD-W8151N RT2860
+TP-Link TD-W8901N RT2860
+TP-Link TD-W8951ND RT2860
+TP-Link TD-W9960 1.0
+TP-Link TD-W9960 1.20
+TP-Link TD-W9960v 1.0
+TP-Link TD-W8968 2.0
+TP-Link TL-MR3020 3.0
+TP-Link TL-MR3420 5.0
+TP-Link TL-MR6400 3.0
+TP-Link TL-MR6400 4.0
+TP-Link TL-WA855RE 4.0
+TP-Link TL-WR840N 4.0
+TP-Link TL-WR840N 5.0
+TP-Link TL-WR840N 6.0
+TP-Link TL-WR841N 13.0
+TP-Link TL-WR841N 14.0
+TP-Link TL-WR841HP 5.0
+TP-Link TL-WR842N 5.0
+TP-Link TL-WR845N 3.0
+TP-Link TL-WR845N 4.0
+TP-Link TL-WR850N 1.0
+TP-Link TL-WR850N 2.0
+TP-Link TL-WR850N 3.0
+TP-Link TL-WR1042N EV-2010-09-20
+D-Link N Router GO-RT-N150
+D-Link Router DIR-605L
+D-Link Router DIR-615H1
+D-Link Router DIR-655
+D-Link Router DIR-809
+DIR-300
+ASUS
+Netgear AP EV-2012-08-04
+NETGEAR Wireless Access Point R6220
+NETGEAR Wireless Access Point R6260
+ZyXEL NBG-416N AP Router
+ZyXEL NBG-418N AP Router
+ZyXEL NBG-418N AP Router NBG-418N
+ZyXEL Wireless AP Router NBG-417N
+Zyxel
+Huawei Wireless Access Point RT2860
+Linksys Wireless Access Point EA7500
+Linksys Wireless Router WRT110
+Tenda 123456
+Tenda
+Belkin AP EV-2012-09-01
+Trendnet router TEW-625br
+Trendnet router TEW-651br
+Sitecom Wireless Router 300N X2 300N
+Netis
