@@ -188,15 +188,14 @@ class WiFiScanner:
                 return text
             return text
 
-        if self.VULN_LIST:
-            # pylint: disable=consider-using-f-string
-            print('Network marks: {1} {0} {2} {0} {3} {0} {4}'.format(
-                '|',
-                colored('Vulnerable model', color='green'),
-                colored('Vulnerable WPS ver.', color='dark_green'),
-                colored('WPS locked', color='red'),
-                colored('Already stored', color='yellow')
-            ))
+        # pylint: disable=consider-using-f-string
+        print('Network marks: {1} {0} {2} {0} {3} {0} {4}'.format(
+            '|',
+            colored('Vulnerable model', color='green'),
+            colored('Vulnerable WPS ver.', color='dark_green'),
+            colored('WPS locked', color='red'),
+            colored('Already stored', color='yellow')
+        ))
 
         def entryMaxLength(item: str):
             """Calculates max length of network_list_items entry"""
