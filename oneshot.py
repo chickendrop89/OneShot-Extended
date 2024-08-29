@@ -47,18 +47,19 @@ if __name__ == '__main__':
         try:
             android_network = src.wifi.android.AndroidNetwork()
 
-            connection = src.wps.connection.Initialize(
-                args.interface, args.write, args.save, args.verbose
-            )
-
-            bruteforce_connection = src.wps.bruteforce.Initialize(
-                args.interface
-            )
-
             if src.utils.isAndroid is True:
                 print('[*] Detected Android OS - temporarily disabling network settings')
                 android_network.storeAlwaysScanState()
                 android_network.disableWifi()
+
+            if args.bruteforce:
+                bruteforce_connection = src.wps.bruteforce.Initialize(
+                    args.interface
+                )
+            else:
+                connection = src.wps.connection.Initialize(
+                    args.interface, args.write, args.save, args.verbose
+                )
 
             if args.pbc:
                 connection.singleConnection(pbc_mode=True)
