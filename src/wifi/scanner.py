@@ -197,10 +197,11 @@ class WiFiScanner:
             colored('Already stored', color='yellow')
         ))
 
-        def entryMaxLength(item: str):
+        def entryMaxLength(item: str, max_length=27):
             """Calculates max length of network_list_items entry"""
 
-            return max(len(entry[1][item]) for entry in network_list_items) + 1
+            lengths = [len(entry[1][item]) for entry in network_list_items]
+            return min(max(lengths), max_length) + 1
 
         # Used to calculate the max width of a collum in the network list table
         columm_lengths = {
