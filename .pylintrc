@@ -321,9 +321,7 @@ valid-metaclass-classmethod-first-arg=mcs
 [DEPRECATED_BUILTINS]
 
 # List of builtins function names that should not be used, separated by a comma
-bad-functions=map,
-              input
-
+bad-functions=map
 
 [DESIGN]
 
