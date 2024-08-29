@@ -35,7 +35,9 @@ if __name__ == '__main__':
                 '/dev/wmtWifi does not exist or it is not a character device')
 
         wmtWifi_device.chmod(0o644)
-        wmtWifi_device.write_text('1')
+        wmtWifi_device.write_text(
+            '1', encoding='utf-8'
+        )
 
     if not src.utils.ifaceUp(args.interface):
         src.utils.die(f'Unable to up interface \'{args.interface}\'')
@@ -95,4 +97,6 @@ if __name__ == '__main__':
         src.utils.ifaceUp(args.interface, down=True)
 
     if args.mtk_wifi:
-        wmtWifi_device.write_text('0')
+        wmtWifi_device.write_text(
+            '0', encoding='utf-8'
+        )
