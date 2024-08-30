@@ -50,7 +50,7 @@ if __name__ == '__main__':
             if args.clear:
                 os.system("clear")
 
-            if src.utils.isAndroid is True:
+            if src.utils.isAndroid() is True:
                 print('[*] Detected Android OS - temporarily disabling network settings')
                 android_network.storeAlwaysScanState()
                 android_network.disableWifi()
@@ -99,7 +99,8 @@ if __name__ == '__main__':
                 print('\nAborting…')
                 break
         finally:
-            if src.utils.isAndroid is True:
+            if src.utils.isAndroid() is True:
+                print('[*] Detected Android OS - enabling network settings')
                 android_network.enableWifi()
 
     if args.iface_down:
