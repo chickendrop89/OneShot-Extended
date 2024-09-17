@@ -21,7 +21,7 @@ class AndroidNetwork:
         if active_wifi_interface.stdout == '':
             src.utils.die('[!] Could not determine active android Wi-Fi interface')
 
-        self.INTERFACE = active_wifi_interface
+        self.INTERFACE = active_wifi_interface.stdout.strip()
 
     def storeAlwaysScanState(self):
         """Stores Initial Wi-Fi 'always-scanning' state, so it can be restored on exit"""
