@@ -16,6 +16,7 @@ class AndroidNetwork:
         active_wifi_interface = subprocess.check_output(getprop_cmd,
             shell=True, text=True
         )
+        active_wifi_interface = active_wifi_interface.strip()
 
         if active_wifi_interface == '':
             src.utils.die('[!] Could not determine active android Wi-Fi interface')
