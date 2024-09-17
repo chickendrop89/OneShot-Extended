@@ -13,12 +13,11 @@ class AndroidNetwork:
     def __getActiveInterface(self):
         getprop_cmd = 'getprop wifi.interface'
 
-        active_wifi_interface = subprocess.run(getprop_cmd,
-            shell=True, text=True,
-            capture_output=True
+        active_wifi_interface = subprocess.check_output(getprop_cmd,
+            shell=True, text=True
         )
 
-        if active_wifi_interface.stdout == '':
+        if active_wifi_interface == '':
             src.utils.die('[!] Could not determine active android Wi-Fi interface')
 
         self.INTERFACE = active_wifi_interface
