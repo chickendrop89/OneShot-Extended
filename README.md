@@ -9,7 +9,7 @@
  - Ability to save upon success
 
 # Requirements
- - Python 3.6 and above
+ - Python 3.8 and above
  - [WPA Supplicant](https://www.w1.fi/wpa_supplicant/)
  - [Pixiewps](https://github.com/wiire-a/pixiewps)
  - [iw](https://wireless.wiki.kernel.org/en/users/documentation/iw)
