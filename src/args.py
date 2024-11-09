@@ -3,7 +3,7 @@ import os
 
 def parseArgs():
     parser = argparse.ArgumentParser(
-        description='OneShotPin 0.0.2 (c) 2017 rofl0r, modded by drygdryg',
+        description='OneShot-Extended (c) 2024 chickendrop89',
         epilog='Example: %(prog)s -i wlan0 -b 00:90:4C:C1:AC:21 -K'
     )
 
