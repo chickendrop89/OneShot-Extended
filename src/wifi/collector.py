@@ -65,8 +65,6 @@ class WiFiCollector:
             f'nmcli connection add type wifi con-name "{essid}" ssid "{essid}" wifi-sec.psk "{wpa_psk}" wifi-sec.key-mgmt wpa-psk'
         )
 
-        print(android_connect_cmd)
-
         # Detect standard android system
         if src.utils.isAndroid() is True:
             self.ANDROID_NETWORK.enableWifi(force_enable=True)
