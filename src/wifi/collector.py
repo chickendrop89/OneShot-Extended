@@ -8,8 +8,8 @@ from shutil import which
 import src.wifi.android
 import src.utils
 
-class Save:
-    """Allows for saving result, pin or network"""
+class WiFiCollector:
+    """Allows for collecting result, pin or network"""
 
     def __init__(self, interface: str):
         self.ANDROID_NETWORK = src.wifi.android.AndroidNetwork(

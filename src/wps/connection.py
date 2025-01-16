@@ -10,7 +10,7 @@ import codecs
 import src.wps.pixiewps
 import src.wps.generator
 import src.utils
-import src.wifi.save
+import src.wifi.collector
 
 class ConnectionStatus:
     """Stores WPS connection details and status"""
@@ -216,7 +216,7 @@ class Initialize:
                         pbc_mode: bool = False, store_pin_on_fail: bool = False):
         pixiewps_dir = src.utils.PIXIEWPS_DIR
         generator    = src.wps.generator.WPSpin()
-        save         = src.wifi.save.Save(
+        collector    = src.wifi.collector.WiFiCollector(
             self.INTERFACE
         )
 
@@ -246,7 +246,7 @@ class Initialize:
                 self.wpsConnection(bssid, pin, pixiemode)
             except KeyboardInterrupt:
                 print('\nAborting…')
-                save.write_pin(bssid, pin)
+                collector.write_pin(bssid, pin)
                 return False
         else:
             self.wpsConnection(bssid, pin, pixiemode)
@@ -254,9 +254,9 @@ class Initialize:
         if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
             self.__credentialPrint(pin, self.CONNECTION_STATUS.WPA_PSK, self.CONNECTION_STATUS.ESSID)
             if self.WRITE_RESULT:
-                save.write_result(bssid, self.CONNECTION_STATUS.ESSID, pin, self.CONNECTION_STATUS.WPA_PSK)
+                collector.write_result(bssid, self.CONNECTION_STATUS.ESSID, pin, self.CONNECTION_STATUS.WPA_PSK)
             if self.SAVE_RESULT:
-                save.add_network(bssid, self.CONNECTION_STATUS.ESSID, self.CONNECTION_STATUS.WPA_PSK)
+                collector.add_network(bssid, self.CONNECTION_STATUS.ESSID, self.CONNECTION_STATUS.WPA_PSK)
             if not pbc_mode:
                 # Try to remove temporary PIN file
                 filename = pixiewps_dir + f'{bssid.replace(":", "").upper()}.run'
@@ -277,7 +277,7 @@ class Initialize:
         else:
             if store_pin_on_fail:
                 # Saving Pixiewps calculated PIN if can't connect
-                save.write_pin(bssid, pin)
+                collector.write_pin(bssid, pin)
             return False
 
     def wpsConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, pbc_mode: bool = False, verbose: bool = None):
