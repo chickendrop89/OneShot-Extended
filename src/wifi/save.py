@@ -68,7 +68,7 @@ class Save:
         print(android_connect_cmd)
 
         # Detect standard android system
-        if src.utils.isAndroid is True:
+        if src.utils.isAndroid() is True:
             self.ANDROID_NETWORK.enableWifi(force_enable=True)
             subprocess.run(android_connect_cmd,
                 shell=True
