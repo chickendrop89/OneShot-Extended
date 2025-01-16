@@ -6,22 +6,9 @@ import src.utils
 class AndroidNetwork:
     """Disable or Enable android Wi-Fi-related settings"""
 
-    def __init__(self):
-        self.INTERFACE = None
+    def __init__(self, interface: str):
+        self.INTERFACE = interface
         self.ENABLED_SCANNING = 0
-
-    def __getActiveInterface(self):
-        getprop_cmd = 'getprop wifi.interface'
-
-        active_wifi_interface = subprocess.check_output(getprop_cmd,
-            shell=True, text=True
-        )
-        active_wifi_interface = active_wifi_interface.strip()
-
-        if active_wifi_interface == '':
-            src.utils.die('[!] Could not determine active android Wi-Fi interface')
-
-        self.INTERFACE = active_wifi_interface
 
     def storeAlwaysScanState(self):
         """Stores Initial Wi-Fi 'always-scanning' state, so it can be restored on exit"""
@@ -38,8 +25,6 @@ class AndroidNetwork:
 
     def disableWifi(self, force_disable: bool = False):
         """Disable Wi-Fi connectivity on Android"""
-
-        self.__getActiveInterface()
 
         ip_link_cmd = f'ip link set {self.INTERFACE} down && ip link set {self.INTERFACE} up'
         wifi_disable_scanning_cmd = 'cmd -w wifi enable-scanning disabled'

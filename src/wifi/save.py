@@ -11,8 +11,10 @@ import src.utils
 class Save:
     """Allows for saving result, pin or network"""
 
-    def __init__(self):
-        self.ANDROID_NETWORK = src.wifi.android.AndroidNetwork()
+    def __init__(self, interface: str):
+        self.ANDROID_NETWORK = src.wifi.android.AndroidNetwork(
+            interface
+        )
 
     def write_result(self, bssid: str, essid: str, wps_pin: str, wpa_psk: str):
         reports_dir = src.utils.REPORTS_DIR
@@ -62,6 +64,8 @@ class Save:
         networkmanager_connect_cmd = (
             f'nmcli connection add type wifi con-name "{essid}" ssid "{essid}" wifi-sec.psk "{wpa_psk}" wifi-sec.key-mgmt wpa-psk'
         )
+
+        print(android_connect_cmd)
 
         # Detect standard android system
         if src.utils.isAndroid is True:

@@ -45,7 +45,9 @@ if __name__ == '__main__':
 
     while True:
         try:
-            android_network = src.wifi.android.AndroidNetwork()
+            android_network = src.wifi.android.AndroidNetwork(
+                args.interface
+            )
 
             if args.clear:
                 os.system("clear")
