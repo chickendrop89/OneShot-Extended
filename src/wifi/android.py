@@ -1,8 +1,6 @@
 import subprocess
 import time
 
-import src.utils
-
 class AndroidNetwork:
     """Disable or Enable android Wi-Fi-related settings"""
 

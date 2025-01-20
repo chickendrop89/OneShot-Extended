@@ -50,7 +50,7 @@ if __name__ == '__main__':
             )
 
             if args.clear:
-                os.system("clear")
+                os.system('clear')
 
             if src.utils.isAndroid() is True:
                 print('[*] Detected Android OS - temporarily disabling network settings')
