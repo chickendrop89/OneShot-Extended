@@ -4,8 +4,7 @@ import time
 class AndroidNetwork:
     """Disable or Enable android Wi-Fi-related settings"""
 
-    def __init__(self, interface: str):
-        self.INTERFACE = interface
+    def __init__(self):
         self.ENABLED_SCANNING = 0
 
     def storeAlwaysScanState(self):
@@ -24,19 +23,15 @@ class AndroidNetwork:
     def disableWifi(self, force_disable: bool = False):
         """Disable Wi-Fi connectivity on Android"""
 
-        ip_link_cmd = f'ip link set {self.INTERFACE} down && ip link set {self.INTERFACE} up'
-        wifi_disable_scanning_cmd = 'cmd -w wifi enable-scanning disabled'
+        wifi_disable_scanner_cmd = 'cmd wifi set-wifi-enabled disabled'
         wifi_disable_always_scanning_cmd = 'cmd -w wifi set-scan-always-available disabled'
 
-        # This tricks the Android Wi-Fi scanner to temporarily stop
-        subprocess.run(ip_link_cmd,
-            shell=True
-        )
-        subprocess.run(wifi_disable_scanning_cmd,
+        # Disable Android Wi-Fi scanner
+        subprocess.run(wifi_disable_scanner_cmd,
             shell=True
         )
 
-        # Always scanning for networks (for location/service purposes) confuses wpa_supplicant
+        # Always scanning for networks causes the interface to be occupied by android
         if self.ENABLED_SCANNING == 1 or force_disable is True:
             subprocess.run(wifi_disable_always_scanning_cmd, shell=True)
 
@@ -45,15 +40,11 @@ class AndroidNetwork:
     def enableWifi(self, force_enable: bool = False):
         """Enable Wi-Fi connectivity on Android"""
 
-        wifi_enable_scanning_cmd = 'cmd -w wifi enable-scanning enabled'
+        wifi_enable_scanner_cmd = 'cmd wifi set-wifi-enabled enabled'
         wifi_enable_always_scanning_cmd = 'cmd -w wifi set-scan-always-available enabled'
-        wifi_start_scan_cmd = 'cmd -w wifi start-scan'
 
-        # Make the Android Wi-Fi scanner work again
-        subprocess.run(wifi_enable_scanning_cmd,
-            shell=True
-        )
-        subprocess.run(wifi_start_scan_cmd,
+        # Enable Android Wi-Fi scanner
+        subprocess.run(wifi_enable_scanner_cmd,
             shell=True
         )
 

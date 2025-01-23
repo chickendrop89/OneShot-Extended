@@ -11,10 +11,8 @@ import src.utils
 class WiFiCollector:
     """Allows for collecting result, pin or network"""
 
-    def __init__(self, interface: str):
-        self.ANDROID_NETWORK = src.wifi.android.AndroidNetwork(
-            interface
-        )
+    def __init__(self):
+        self.ANDROID_NETWORK = src.wifi.android.AndroidNetwork()
 
     def write_result(self, bssid: str, essid: str, wps_pin: str, wpa_psk: str):
         reports_dir = src.utils.REPORTS_DIR

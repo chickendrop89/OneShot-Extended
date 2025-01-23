@@ -216,9 +216,7 @@ class Initialize:
                         pbc_mode: bool = False, store_pin_on_fail: bool = False):
         pixiewps_dir = src.utils.PIXIEWPS_DIR
         generator    = src.wps.generator.WPSpin()
-        collector    = src.wifi.collector.WiFiCollector(
-            self.INTERFACE
-        )
+        collector    = src.wifi.collector.WiFiCollector()
 
         if not pin:
             if pixiemode:
