@@ -144,7 +144,6 @@ WNDR3700V4
 HG256
 ESR300H
 EA4500
-unknow
 WNDR3300
 WR-741nd
 SAMSUNG D7000
@@ -615,8 +614,6 @@ D-Link Router DIR-605L
 D-Link Router DIR-615H1
 D-Link Router DIR-655
 D-Link Router DIR-809
-DIR-300
-ASUS
 Netgear AP EV-2012-08-04
 NETGEAR Wireless Access Point R6220
 NETGEAR Wireless Access Point R6260
@@ -624,14 +621,10 @@ ZyXEL NBG-416N AP Router
 ZyXEL NBG-418N AP Router
 ZyXEL NBG-418N AP Router NBG-418N
 ZyXEL Wireless AP Router NBG-417N
-Zyxel
 Huawei Wireless Access Point RT2860
 Linksys Wireless Access Point EA7500
 Linksys Wireless Router WRT110
-Tenda 123456
-Tenda
 Belkin AP EV-2012-09-01
 Trendnet router TEW-625br
 Trendnet router TEW-651br
 Sitecom Wireless Router 300N X2 300N
-Netis
