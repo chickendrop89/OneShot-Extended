@@ -1,7 +1,9 @@
 # Overview
 **OneShot-Extended** performs the [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack) without the requirement of monitor mode.
 
-# Advantages over original OneShot implemetations
+This is an improved version of the original OneShot
+
+## Advantages over original OneShot
  - Highlighting of a vulnerable WPS version (1.0) in the scanner
  - Ability to save the AP right into the Network Manager of your system
  - Ability to clear the screen every scan
