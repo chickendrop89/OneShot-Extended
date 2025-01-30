@@ -4,31 +4,29 @@ import pathlib
 import subprocess
 
 USER_HOME = str(pathlib.Path.home())
-SESSIONS_DIR = f'{USER_HOME}/.OneShot/sessions/'
-PIXIEWPS_DIR = f'{USER_HOME}/.OneShot/pixiewps/'
-REPORTS_DIR = os.path.dirname(os.path.realpath(__file__)) + '/reports/'
-
-def getHex(line: str):
-    a = line.split(':', 3)
-    return a[2].replace(' ', '').upper()
+SESSIONS_DIR = f'{USER_HOME}/.OSE/sessions/'
+PIXIEWPS_DIR = f'{USER_HOME}/.OSE/pixiewps/'
+REPORTS_DIR  = f'{os.getcwd()}/reports/'
 
 def isAndroid():
+    """Check if this project is ran on android."""
+
     return bool(hasattr(sys, 'getandroidapilevel'))
 
-def ifaceUp(interface: str, down: bool = False):
-    if down:
-        action = 'down'
-    else:
-        action = 'up'
+def ifaceCtl(interface: str, action: str):
+    """Put an interface up or down."""
 
-    cmd = f'ip link set {interface} {action}'
+    command = ['ip', 'link', 'set', f'{interface}', f'{action}']
+    command_output = subprocess.run(command)
 
-    res = subprocess.run(cmd,
-        shell=True, stdout=sys.stdout, stderr=sys.stdout
-    )
+    return not command_output.returncode
 
-    return not res.returncode
+def clearScreen():
+    """Clear the terminal screen."""
+
+    os.system('clear')
 
 def die(text: str):
-    sys.stderr.write(text + '\n')
-    sys.exit(1)
+    """Print an error and exit with non-zero exit code."""
+
+    sys.exit(f'[!] {text} \n')

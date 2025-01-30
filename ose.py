@@ -12,9 +12,11 @@ import src.utils
 import src.args
 
 if __name__ == '__main__':
-    # Python 3.8
+    # Python 3.8 is required
     if sys.hexversion < 0x030800F0:
         src.utils.die('The program requires Python 3.8 and above')
+
+    # Running as root is required to use the interface
     if os.getuid() != 0:
         src.utils.die('Run it as root')
 
@@ -40,7 +42,7 @@ if __name__ == '__main__':
             '1', encoding='utf-8'
         )
 
-    if not src.utils.ifaceUp(args.interface):
+    if not src.utils.ifaceCtl(args.interface, action='up'):
         src.utils.die(f'Unable to up interface \'{args.interface}\'')
 
     while True:
@@ -48,10 +50,9 @@ if __name__ == '__main__':
             android_network = src.wifi.android.AndroidNetwork()
 
             if args.clear:
-                os.system('clear')
+                src.utils.clearScreen()
 
             if src.utils.isAndroid() is True:
-                print('[*] Detected Android OS - temporarily disabling network settings')
                 android_network.storeAlwaysScanState()
                 android_network.disableWifi()
 
@@ -74,37 +75,44 @@ if __name__ == '__main__':
                     except FileNotFoundError:
                         vuln_list = []
 
-                    scanner = src.wifi.scanner.WiFiScanner(args.interface, vuln_list)
                     if not args.loop:
                         print('[*] BSSID not specified (--bssid) — scanning for available networks')
+
+                    scanner = src.wifi.scanner.WiFiScanner(args.interface, vuln_list)
                     args.bssid = scanner.promptNetwork()
 
                 if args.bssid:
                     if args.bruteforce:
-                        bruteforce_connection.smartBruteforce(args.bssid, args.pin, args.delay)
+                        bruteforce_connection.smartBruteforce(
+                            args.bssid, args.pin, args.delay
+                        )
                     else:
-                        connection.singleConnection(args.bssid, args.pin, args.pixie_dust, args.show_pixie_cmd, args.pixie_force)
+                        connection.singleConnection(
+                            args.bssid, args.pin, args.pixie_dust,
+                            args.show_pixie_cmd, args.pixie_force
+                        )
             if not args.loop:
                 break
-            else:
-                args.bssid = None
+
+            args.bssid = None
+
         except KeyboardInterrupt:
             if args.loop:
                 if input('\n[?] Exit the script (otherwise continue to AP scan)? [N/y] ').lower() == 'y':
                     print('Aborting…')
                     break
-                else:
-                    args.bssid = None
+
+                args.bssid = None
             else:
                 print('\nAborting…')
                 break
+
         finally:
             if src.utils.isAndroid() is True:
-                print('[*] Detected Android OS - enabling network settings')
                 android_network.enableWifi()
 
     if args.iface_down:
-        src.utils.ifaceUp(args.interface, down=True)
+        src.utils.ifaceCtl(args.interface, action='down')
 
     if args.mtk_wifi:
         wmtWifi_device.write_text(

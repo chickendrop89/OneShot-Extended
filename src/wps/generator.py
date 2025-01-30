@@ -4,12 +4,23 @@ class NetworkAddress:
     def __init__(self, mac):
         if isinstance(mac, int):
             self._INT_REPR = mac
-            self._STR_REPR = self.__int2mac(mac)
+            self._STR_REPR = self._int2mac(mac)
         elif isinstance(mac, str):
             self._STR_REPR = mac.replace('-', ':').replace('.', ':').upper()
-            self._INT_REPR = self.__mac2int(mac)
-        else:
-            raise ValueError('MAC address must be string or integer')
+            self._INT_REPR = self._mac2int(mac)
+
+    @staticmethod
+    def _mac2int(mac) -> int:
+        """Converts MAC address to integer"""
+        return int(mac.replace(':', ''), 16)
+
+    @staticmethod
+    def _int2mac(mac) -> str:
+        """Converts integer to MAC address"""
+        mac = hex(mac).split('x')[-1].upper()
+        mac = mac.zfill(12)
+        mac = ':'.join(mac[i: i + 2] for i in range(0, 12, 2))
+        return mac
 
     @property
     def STRING(self):
@@ -18,7 +29,7 @@ class NetworkAddress:
     @STRING.setter
     def STRING(self, value):
         self._STR_REPR = value
-        self._INT_REPR = self.__mac2int(value)
+        self._INT_REPR = self._mac2int(value)
 
     @property
     def INTEGER(self):
@@ -27,7 +38,7 @@ class NetworkAddress:
     @INTEGER.setter
     def INTEGER(self, value):
         self._INT_REPR = value
-        self._STR_REPR = self.__int2mac(value)
+        self._STR_REPR = self._int2mac(value)
 
     def __int__(self):
         return self.INTEGER
@@ -53,35 +64,24 @@ class NetworkAddress:
     def __gt__(self, other):
         return self.INTEGER > other.INTEGER
 
-    @staticmethod
-    def __mac2int(mac):
-        return int(mac.replace(':', ''), 16)
-
-    @staticmethod
-    def __int2mac(mac):
-        mac = hex(mac).split('x')[-1].upper()
-        mac = mac.zfill(12)
-        mac = ':'.join(mac[i: i + 2] for i in range(0, 12, 2))
-        return mac
-
     def __repr__(self):
         return f'NetworkAddress(string={self._STR_REPR}, integer={self._INT_REPR})'
 
 class WPSpin:
-    """WPS pin generator"""
+    """WPS pin generator."""
 
     def __init__(self):
         self.ALGO_MAC = 0
         self.ALGO_EMPTY = 1
         self.ALGO_STATIC = 2
 
-        self.ALGOS = {'pin24': {'name': '24-bit PIN', 'mode': self.ALGO_MAC, 'gen': self.pin24},
-                      'pin28': {'name': '28-bit PIN', 'mode': self.ALGO_MAC, 'gen': self.pin28},
-                      'pin32': {'name': '32-bit PIN', 'mode': self.ALGO_MAC, 'gen': self.pin32},
-                      'pinDLink': {'name': 'D-Link PIN', 'mode': self.ALGO_MAC, 'gen': self.pinDLink},
-                      'pinDLink1': {'name': 'D-Link PIN +1', 'mode': self.ALGO_MAC, 'gen': self.pinDLink1},
-                      'pinASUS': {'name': 'ASUS PIN', 'mode': self.ALGO_MAC, 'gen': self.pinASUS},
-                      'pinAirocon': {'name': 'Airocon Realtek', 'mode': self.ALGO_MAC, 'gen': self.pinAirocon},
+        self.ALGOS = {'pin24': {'name': '24-bit PIN', 'mode': self.ALGO_MAC, 'gen': self._pin24},
+                      'pin28': {'name': '28-bit PIN', 'mode': self.ALGO_MAC, 'gen': self._pin28},
+                      'pin32': {'name': '32-bit PIN', 'mode': self.ALGO_MAC, 'gen': self._pin32},
+                      'pinDLink': {'name': 'D-Link PIN', 'mode': self.ALGO_MAC, 'gen': self._pinDLink},
+                      'pinDLink1': {'name': 'D-Link PIN +1', 'mode': self.ALGO_MAC, 'gen': self._pinDLink1},
+                      'pinASUS': {'name': 'ASUS PIN', 'mode': self.ALGO_MAC, 'gen': self._pinASUS},
+                      'pinAirocon': {'name': 'Airocon Realtek', 'mode': self.ALGO_MAC, 'gen': self._pinAirocon},
                       # Static pin algos
                       'pinEmpty': {'name': 'Empty PIN', 'mode': self.ALGO_EMPTY, 'gen': lambda mac: ''},
                       'pinCisco': {'name': 'Cisco', 'mode': self.ALGO_STATIC, 'gen': lambda mac: 1234567},
@@ -107,13 +107,56 @@ class WPSpin:
                       'pinH108L': {'name': 'H108L', 'mode': self.ALGO_STATIC, 'gen': lambda mac: 9422988},
                       'pinONO': {'name': 'CBN ONO', 'mode': self.ALGO_STATIC, 'gen': lambda mac: 9575521}}
 
+    def promptPin(self, bssid: str):
+        """Prompts to select a WPS pin from a list of suggested pins."""
+
+        pins = self._getSuggested(bssid)
+
+        if len(pins) > 1:
+            print(f'PINs generated for {bssid}:')
+            print('{:<3} {:<10} {:<}'.format(
+                '#', 'PIN', 'Name'
+            ))
+
+            for i, pin in enumerate(pins):
+                number = f'{i + 1})'
+                line = '{:<3} {:<10} {:<}'.format(
+                    number, pin['pin'], pin['name'])
+                print(line)
+
+            while True:
+                pin_no = input('Select the PIN: ')
+                try:
+                    if int(pin_no) in range(1, len(pins) + 1):
+                        pin = pins[int(pin_no) - 1]['pin']
+                    else:
+                        raise ValueError
+                except ValueError:
+                    print('Invalid number')
+                else:
+                    break
+
+        elif len(pins) == 1:
+            pin = pins[0]
+            print('[*] The only probable PIN is selected:', pin['name'])
+            pin = pin['pin']
+        else:
+            return None
+
+        return pin
+
+    def getLikely(self, bssid: str) -> list | None:
+        """Returns a likely pin."""
+
+        res = self._getSuggestedList(bssid)
+        if res:
+            return res[0]
+
+        return None
+
     @staticmethod
-    def checksum(pin):
-        """
-        Standard WPS checksum algorithm.
-        @pin — A 7 digit pin to calculate the checksum for.
-        Returns the checksum value.
-        """
+    def checksum(pin: int) -> int:
+        """Standard WPS checksum algorithm."""
 
         accum = 0
         while pin:
@@ -123,100 +166,11 @@ class WPSpin:
             pin = int(pin / 10)
         return (10 - accum % 10) % 10
 
-    def generate(self, algo, mac):
-        """
-        WPS pin generator
-        @algo — the WPS pin algorithm ID
-        Returns the WPS pin string value
-        """
+    @staticmethod
+    def _suggest(bssid: str) -> list:
+        """Get algo suggestions for a BSSID."""
 
-        mac = NetworkAddress(mac)
-        if algo not in self.ALGOS:
-            raise ValueError('Invalid WPS pin algorithm')
-
-        pin = self.ALGOS[algo]['gen'](mac)
-
-        if algo == 'pinEmpty':
-            return pin
-
-        pin = pin % 10000000
-        pin = str(pin) + str(self.checksum(pin))
-        return pin.zfill(8)
-
-    def getAll(self, mac, get_static=True):
-        """Get all WPS pin's for single MAC"""
-
-        res = []
-        for identification, algo in self.ALGOS.items():
-            if algo['mode'] == self.ALGO_STATIC and not get_static:
-                continue
-
-            item = {}
-            item['id'] = identification
-
-            if algo['mode'] == self.ALGO_STATIC:
-                item['name'] = 'Static PIN — ' + algo['name']
-            else:
-                item['name'] = algo['name']
-
-            item['pin'] = self.generate(identification, mac)
-            res.append(item)
-        return res
-
-    def getList(self, mac, get_static=True):
-        """Get all WPS pin's for single MAC as list"""
-
-        res = []
-        for identification, algo in self.ALGOS.items():
-            if algo['mode'] == self.ALGO_STATIC and not get_static:
-                continue
-
-            res.append(self.generate(identification, mac))
-        return res
-
-    def getSuggested(self, mac):
-        """Get all suggested WPS pin's for single MAC"""
-
-        algos = self.__suggest(mac)
-        res = []
-        for identification in algos:
-            algo = self.ALGOS[identification]
-            item = {}
-            item['id'] = identification
-
-            if algo['mode'] == self.ALGO_STATIC:
-                item['name'] = 'Static PIN — ' + algo['name']
-            else:
-                item['name'] = algo['name']
-
-            item['pin'] = self.generate(identification, mac)
-            res.append(item)
-        return res
-
-    def getSuggestedList(self, mac):
-        """Get all suggested WPS pin's for single MAC as list"""
-
-        algos = self.__suggest(mac)
-        res = []
-        for algo in algos:
-            res.append(self.generate(algo, mac))
-
-        return res
-
-    def getLikely(self, mac):
-        res = self.getSuggestedList(mac)
-        if res:
-            return res[0]
-
-        return None
-
-    def __suggest(self, mac):
-        """
-        Get algos suggestions for single MAC
-        Returns the algo ID
-        """
-
-        mac = mac.replace(':', '').upper()
+        mac = bssid.replace(':', '').upper()
         algorithms = {
             'pin24': ('04BF6D', '0E5D4E', '107BEF', '14A9E3', '28285D', '2A285D', '32B2DC', '381766', '404A03', '4E5D4E', '5067F0', '5CF4AB', '6A285D', '8E5D4E', 'AA285D', 'B0B2DC', 'C86C87', 'CC5D4E', 'CE5D4E', 'EA285D', 'E243F6', 'EC43F6', 'EE43F6', 'F2B2DC', 'FCF528', 'FEF528', '4C9EFF', '0014D1', 'D8EB97', '1C7EE5', '84C9B2', 'FC7516', '14D64D', '9094E4', 'BCF685', 'C4A81D', '00664B', '087A4C', '14B968', '2008ED', '346BD3', '4CEDDE', '786A89', '88E3AB', 'D46E5C', 'E8CD2D', 'EC233D', 'ECCB30', 'F49FF3', '20CF30', '90E6BA', 'E0CB4E', 'D4BF7F4', 'F8C091', '001CDF', '002275', '08863B', '00B00C', '081075', 'C83A35', '0022F7', '001F1F', '00265B', '68B6CF', '788DF7', 'BC1401', '202BC1', '308730', '5C4CA9', '62233D', '623CE4', '623DFF', '6253D4', '62559C', '626BD3', '627D5E', '6296BF', '62A8E4', '62B686', '62C06F', '62C61F', '62C714', '62CBA8', '62CDBE', '62E87B', '6416F0', '6A1D67', '6A233D', '6A3DFF', '6A53D4', '6A559C', '6A6BD3', '6A96BF', '6A7D5E', '6AA8E4', '6AC06F', '6AC61F', '6AC714', '6ACBA8', '6ACDBE', '6AD15E', '6AD167', '721D67', '72233D', '723CE4', '723DFF', '7253D4', '72559C', '726BD3', '727D5E', '7296BF', '72A8E4', '72C06F', '72C61F', '72C714', '72CBA8', '72CDBE', '72D15E', '72E87B', '0026CE', '9897D1', 'E04136', 'B246FC', 'E24136', '00E020', '5CA39D', 'D86CE9', 'DC7144', '801F02', 'E47CF9', '000CF6', '00A026', 'A0F3C1', '647002', 'B0487A', 'F81A67', 'F8D111', '34BA9A', 'B4944E'),
             'pin28': ('200BC7', '4846FB', 'D46AA8', 'F84ABF'),
@@ -256,18 +210,22 @@ class WPSpin:
 
         return res
 
-    def pin24(self, mac):
-        return mac.INTEGER & 0xFFFFFF
+    @staticmethod
+    def _pin24(bssid: str):
+        return bssid.INTEGER & 0xFFFFFF
 
-    def pin28(self, mac):
-        return mac.INTEGER & 0xFFFFFFF
+    @staticmethod
+    def _pin28(bssid: str):
+        return bssid.INTEGER & 0xFFFFFFF
 
-    def pin32(self, mac):
-        return mac.INTEGER % 0x100000000
+    @staticmethod
+    def _pin32(bssid: str):
+        return bssid.INTEGER % 0x100000000
 
-    def pinDLink(self, mac):
+    @staticmethod
+    def _pinDLink(bssid: str):
         # Get the NIC part
-        nic = mac.INTEGER & 0xFFFFFF
+        nic = bssid.INTEGER & 0xFFFFFF
         # Calculating pin
         pin = nic ^ 0x55AA55
         pin ^= (((pin & 0xF) << 4) +
@@ -281,20 +239,18 @@ class WPSpin:
 
         return pin
 
-    def pinDLink1(self, mac):
-        mac.INTEGER += 1
-        return self.pinDLink(mac)
-
-    def pinASUS(self, mac):
-        b = [int(i, 16) for i in mac.string.split(':')]
+    @staticmethod
+    def _pinASUS(bssid: str):
+        b = [int(i, 16) for i in bssid.string.split(':')]
         pin = ''
         for i in range(7):
             pin += str((b[i % 6] + b[5]) % (10 - (i + b[1] + b[2] + b[3] + b[4] + b[5]) % 7))
 
         return int(pin)
 
-    def pinAirocon(self, mac):
-        b = [int(i, 16) for i in mac.string.split(':')]
+    @staticmethod
+    def _pinAirocon(bssid: str):
+        b = [int(i, 16) for i in bssid.string.split(':')]
         pin = ((b[0] + b[1]) % 10)\
         + (((b[5] + b[0]) % 10) * 10)\
         + (((b[4] + b[5]) % 10) * 100)\
@@ -305,40 +261,51 @@ class WPSpin:
 
         return pin
 
-    def promptPin(self, bssid: str):
-        pins = self.getSuggested(bssid)
-        if len(pins) > 1:
-            print(f'PINs generated for {bssid}:')
+    def _pinDLink1(self, bssid: str):
+        bssid.INTEGER += 1
+        return self._pinDLink(bssid)
 
-            # pylint: disable=consider-using-f-string
-            print('{:<3} {:<10} {:<}'.format(
-                '#', 'PIN', 'Name'
-            ))
+    def _generate(self, algo: str, bssid: str):
+        """WPS pin generator."""
 
-            for i, pin in enumerate(pins):
-                number = f'{i + 1})'
-                # pylint: disable=consider-using-f-string
-                line = '{:<3} {:<10} {:<}'.format(
-                    number, pin['pin'], pin['name'])
-                print(line)
+        mac = NetworkAddress(bssid)
+        if algo not in self.ALGOS:
+            raise ValueError('Invalid WPS pin algorithm')
 
-            while True:
-                pin_no = input('Select the PIN: ')
-                try:
-                    if int(pin_no) in range(1, len(pins) + 1):
-                        pin = pins[int(pin_no) - 1]['pin']
-                    else:
-                        raise ValueError
-                except ValueError:
-                    print('Invalid number')
-                else:
-                    break
+        pin = self.ALGOS[algo]['gen'](mac)
 
-        elif len(pins) == 1:
-            pin = pins[0]
-            print('[i] The only probable PIN is selected:', pin['name'])
-            pin = pin['pin']
-        else:
-            return None
+        if algo == 'pinEmpty':
+            return pin
 
-        return pin
+        pin = pin % 10000000
+        pin = str(pin) + str(self.checksum(pin))
+        return pin.zfill(8)
+
+    def _getSuggested(self, bssid: str):
+        """Get all suggested WPS pin's for single MAC."""
+
+        algos = self._suggest(bssid)
+        res = []
+        for identification in algos:
+            algo = self.ALGOS[identification]
+            item = {}
+            item['id'] = identification
+
+            if algo['mode'] == self.ALGO_STATIC:
+                item['name'] = 'Static PIN — ' + algo['name']
+            else:
+                item['name'] = algo['name']
+
+            item['pin'] = self._generate(identification, bssid)
+            res.append(item)
+        return res
+
+    def _getSuggestedList(self, bssid: str):
+        """Get all suggested WPS pin's for single MAC as list."""
+
+        algos = self._suggest(bssid)
+        res = []
+        for algo in algos:
+            res.append(self._generate(algo, bssid))
+
+        return res

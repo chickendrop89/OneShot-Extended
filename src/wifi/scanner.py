@@ -4,24 +4,31 @@ import csv
 import codecs
 import subprocess
 
-import src.args
+from src.utils import REPORTS_DIR
 
+import src.args
 args = src.args.parseArgs()
 
 class WiFiScanner:
-    """Handles parsing scan results and table"""
+    """Handles parsing scan results and table."""
 
     def __init__(self, interface: str, vuln_list: str = None):
         self.INTERFACE = interface
         self.VULN_LIST = vuln_list
 
-        reports_fname = os.path.dirname(os.path.realpath(__file__)) + '/reports/stored.csv'
+        reports_fname = REPORTS_DIR + 'stored.csv'
+
         try:
-            with open(reports_fname, 'r', newline='', encoding='utf-8', errors='replace') as file:
-                csv_reader = csv.reader(file, delimiter=';', quoting=csv.QUOTE_ALL)
+            # Look for already stored networks to highlight
+            with open(reports_fname, 'r', newline='', encoding='utf-8') as file:
+                csv_reader = csv.reader(file,
+                    delimiter=';', quoting=csv.QUOTE_ALL
+                )
+
                 # Skip header
                 next(csv_reader)
                 self.STORED = []
+
                 for row in csv_reader:
                     self.STORED.append(
                         (
@@ -32,10 +39,35 @@ class WiFiScanner:
         except FileNotFoundError:
             self.STORED = []
 
-    def iwScanner(self) -> dict[int, dict]:
-        """Parsing iw scan results"""
+    def promptNetwork(self) -> str:
+        """Prompts the user to select a network from the available WPS networks."""
 
-        def handleNetwork(line, result, networks):
+        networks = self._iwScanner()
+
+        if not networks:
+            print('[-] No WPS networks found.')
+            return
+
+        while True:
+            try:
+                network_no = input('Select target (press Enter to refresh): ')
+
+                if network_no.lower() in {'r', '0', ''}:
+                    if args.clear:
+                        src.utils.clearScreen()
+                    return self.promptNetwork()
+
+                if int(network_no) in networks.keys():
+                    return networks[int(network_no)]['BSSID']
+
+                raise IndexError
+            except IndexError:
+                print('Invalid number')
+
+    def _iwScanner(self) -> dict[int, dict] | bool:
+        """Parsing iw scan results."""
+
+        def handleNetwork(_line, result, networks):
             networks.append(
                 {
                     'Security type': 'Unknown',
@@ -49,14 +81,14 @@ class WiFiScanner:
             )
             networks[-1]['BSSID'] = result.group(1).upper()
 
-        def handleEssid(line, result, networks):
+        def handleEssid(_line, result, networks):
             d = result.group(1)
             networks[-1]['ESSID'] = codecs.decode(d, 'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
 
-        def handleLevel(line, result, networks):
+        def handleLevel(_line, result, networks):
             networks[-1]['Level'] = int(float(result.group(1)))
 
-        def handleSecurityType(line, result, networks):
+        def handleSecurityType(_line, result, networks):
             sec = networks[-1]['Security type']
             if result.group(1) == 'capability':
                 if 'Privacy' in result.group(2):
@@ -78,12 +110,14 @@ class WiFiScanner:
                     sec = 'WPA/WPA2'
             networks[-1]['Security type'] = sec
 
-        def handleWps(line, result, networks):
+        def handleWps(_line, result, networks):
             is_wps_enabled = bool(result.group(1))
             networks[-1]['WPS'] = is_wps_enabled
 
-        def handleWpsVersion(line, result, networks):
+        def handleWpsVersion(_line, result, networks):
             wps_ver = networks[-1]['WPS version']
+
+            # Only WPS 2.0 APs broadcast this, this way we can distinguish between 1.0<->2.0
             wps_ver_filtered = result.group(1).replace('* Version2:', '')
 
             if wps_ver_filtered == '2.0':
@@ -91,20 +125,20 @@ class WiFiScanner:
 
             networks[-1]['WPS version'] = wps_ver
 
-        def handleWpsLocked(line, result, networks):
+        def handleWpsLocked(_line, result, networks):
             flag = int(result.group(1), 16)
             if flag:
                 networks[-1]['WPS locked'] = True
 
-        def handleModel(line, result, networks):
+        def handleModel(_line, result, networks):
             d = result.group(1)
             networks[-1]['Model'] = codecs.decode(d, 'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
 
-        def handleModelNumber(line: str, result: str, networks: list):
+        def handleModelNumber(_line: str, result: str, networks: list):
             d = result.group(1)
             networks[-1]['Model number'] = codecs.decode(d, 'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
 
-        def handleDeviceName(line, result, networks):
+        def handleDeviceName(_line, result, networks):
             d = result.group(1)
             networks[-1]['Device name'] = codecs.decode(d, 'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
 
@@ -125,10 +159,9 @@ class WiFiScanner:
             re.compile(r' [*] Device name: (.*)'): handleDeviceName
         }
 
-        cmd = f'iw dev {self.INTERFACE} scan'
-        iw_scan_process = subprocess.run(cmd,
-            shell=True, encoding='utf-8', errors='replace',
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        command = ['iw', 'dev', f'{self.INTERFACE}', 'scan']
+        iw_scan_process = subprocess.run(command,
+            encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
 
         lines = iw_scan_process.stdout.splitlines()
@@ -147,6 +180,7 @@ class WiFiScanner:
 
         # Filtering non-WPS networks
         networks = list(filter(lambda x: bool(x['WPS']), networks))
+
         if not networks:
             return False
 
@@ -157,20 +191,15 @@ class WiFiScanner:
         network_list = {(i + 1): network for i, network in enumerate(networks)}
         network_list_items = list(network_list.items())
 
-        # Printing scanning results as table
-        def truncateStr(s: str, length: int, postfix='…'):
-            """
-            Truncate string with the specified length
-            @s — input string
-            @length — length of output string
-            """
+        def truncateStr(s: str, length: int, postfix='…') -> str:
+            """Truncate string with the specified length."""
 
             if len(s) > length:
                 k = length - len(postfix)
                 s = s[:k] + postfix
             return s
 
-        def colored(text: str, color: str):
+        def colored(text: str, color: str) -> str:
             """Returns colored text"""
 
             if color:
@@ -188,7 +217,6 @@ class WiFiScanner:
                 return text
             return text
 
-        # pylint: disable=consider-using-f-string
         print('Network marks: {1} {0} {2} {0} {3} {0} {4}'.format(
             '|',
             colored('Vulnerable model', color='green'),
@@ -197,7 +225,7 @@ class WiFiScanner:
             colored('Already stored', color='yellow')
         ))
 
-        def entryMaxLength(item: str, max_length=27):
+        def entryMaxLength(item: str, max_length=27) -> int:
             """Calculates max length of network_list_items entry"""
 
             lengths = [len(entry[1][item]) for entry in network_list_items]
@@ -245,22 +273,3 @@ class WiFiScanner:
                 print(line)
 
         return network_list
-
-    def promptNetwork(self) -> str:
-        networks = self.iwScanner()
-        if not networks:
-            print('[-] No WPS networks found.')
-            return
-        while 1:
-            try:
-                network_no = input('Select target (press Enter to refresh): ')
-                if network_no.lower() in ('r', '0', ''):
-                    if args.clear:
-                        os.system('clear')
-                    return self.promptNetwork()
-                elif int(network_no) in networks.keys():
-                    return networks[int(network_no)]['BSSID']
-                else:
-                    raise IndexError
-            except IndexError:
-                print('Invalid number')

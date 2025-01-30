@@ -1,12 +1,19 @@
 # Overview
-**OneShot-Extended** performs the [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack) without special card or monitor mode.
+**OneShot-Extended** performs the [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack) without the requirement of monitor mode.
+
+# Advantages over original OneShot implemetations
+ - Highlighting of a vulnerable WPS version (1.0) in the scanner
+ - Ability to save the AP right into the Network Manager of your system
+ - Ability to clear the screen every scan
+ - Improved Android support
+ - Works on modern python versions
 
 # Features
  - [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack)
  - Offline WPS PIN generating algorithm
  - [Online WPS bruteforce](https://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf)
  - Wi-Fi scanner with highlighting based on iw;
- - Ability to save upon success
+ - Ability to write to a file/save to network manager
 
 # Requirements
  - Python 3.8 and above
@@ -53,14 +60,14 @@ Advanced arguments:
  pkg install -y root-repo
  pkg install -y git tsu python wpa-supplicant pixiewps iw openssl
  ```
-**Getting OneShot**
+**Getting OneShot-Extended**
  ```shell
  cd ~
- git clone --depth 1 https://github.com/chickendrop89/OneShot-Extended OneShot
+ git clone --depth 1 https://github.com/chickendrop89/OneShot-Extended ose
  ```
 **Running**
  ```shell
- sudo python OneShot/oneshot.py -i wlan0
+ sudo python ose/ose.py -i wlan0
  ```
 
 ## Linux distributions 
@@ -72,11 +79,11 @@ Advanced arguments:
 **Getting OneShot**
  ```shell
  cd ~
- git clone https://github.com/chickendrop89/OneShot-Extended OneShot
+ git clone --depth 1 https://github.com/chickendrop89/OneShot-Extended ose
  ```
 **Running**
  ```shell
- sudo python OneShot/oneshot.py -i wlan0
+ sudo python ose/ose.py -i wlan0
  ```
 
 -----
@@ -84,19 +91,19 @@ Advanced arguments:
 ## Usage examples
 Start Pixie Dust attack on a specified BSSID:
  ```shell
- sudo python3 oneshot.py -i wlan0 -b 00:90:4C:C1:AC:21 -K
+ sudo python3 ose.py -i wlan0 -b 00:90:4C:C1:AC:21 -K
  ```
 Show avaliable networks and start Pixie Dust attack on a specified network:
  ```shell
- sudo python3 oneshot.py -i wlan0 -K
+ sudo python3 ose.py -i wlan0 -K
  ```
 Launch online WPS bruteforce with the specified first half of the PIN:
  ```shell
- sudo python3 oneshot.py -i wlan0 -b 00:90:4C:C1:AC:21 -B -p 1234
+ sudo python3 ose.py -i wlan0 -b 00:90:4C:C1:AC:21 -B -p 1234
  ```
  Start WPS push button connection:s
  ```shell
- sudo python3 oneshot.py -i wlan0 --pbc
+ sudo python3 ose.py -i wlan0 --pbc
  ```
 
 -----
@@ -107,10 +114,10 @@ Launch online WPS bruteforce with the specified first half of the PIN:
 - ```sudo rfkill unblock wifi```
 
 **"Device or resource busy (-16)"**
-- Try disabling Wi-Fi in the system settings and kill the Network manager. Alternatively, you can try running OneShot with ```--iface-down``` argument.
+- Try disabling Wi-Fi in the system settings and kill the Network manager. Alternatively, you can try running OneShot-Extended with ```--iface-down``` argument.
 
 **The wlan0 interface disappears when Wi-Fi is disabled on Android devices with MediaTek SoC**
-- Try running OneShot with the `--mtk-wifi` flag to initialize Wi-Fi device driver.
+- Try running Oneshot-Extended with the `--mtk-wifi` flag to initialize Wi-Fi device driver.
 
 -----
 
