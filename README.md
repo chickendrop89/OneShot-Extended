@@ -7,7 +7,7 @@ This is an improved version of the original OneShot
  - Highlighting of a vulnerable WPS version (1.0) in the scanner
  - Ability to save the AP right into the Network Manager of your system
  - Ability to clear the screen every scan
- - Minor changes (e.g, WPA3TM indication, better vulnwsc detection)
+ - Minor changes (e.g, WPA3TM indication, better vulnwsc detection, RF-Kill handling)
  - Works on modern python versions (>3.8)
  - Improved Android support
 
