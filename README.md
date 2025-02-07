@@ -7,21 +7,16 @@ This is an improved version of the original OneShot
  - Highlighting of a vulnerable WPS version (1.0) in the scanner
  - Ability to save the AP right into the Network Manager of your system
  - Ability to clear the screen every scan
+ - Minor changes (e.g, WPA3TM indication, better vulnwsc detection)
+ - Works on modern python versions (>3.8)
  - Improved Android support
- - Works on modern python versions
 
 # Features
  - [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack)
  - Offline WPS PIN generating algorithm
  - [Online WPS bruteforce](https://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf)
  - Wi-Fi scanner with highlighting based on iw;
- - Ability to write to a file/save to network manager
-
-# Requirements
- - Python 3.8 and above
- - [WPA Supplicant](https://www.w1.fi/wpa_supplicant/)
- - [Pixiewps](https://github.com/wiire-a/pixiewps)
- - [iw](https://wireless.wiki.kernel.org/en/users/documentation/iw)
+ - Ability to write to a file
 
 # Usage
 ```
@@ -54,6 +49,7 @@ Advanced arguments:
  ```
 
 # Installation
+
 ## Termux
 **Please note that root access is required.**  
 
@@ -88,47 +84,21 @@ Advanced arguments:
  sudo python ose/ose.py -i wlan0
  ```
 
------
+# Troubleshooting
 
-## Usage examples
-Start Pixie Dust attack on a specified BSSID:
- ```shell
- sudo python3 ose.py -i wlan0 -b 00:90:4C:C1:AC:21 -K
- ```
-Show avaliable networks and start Pixie Dust attack on a specified network:
- ```shell
- sudo python3 ose.py -i wlan0 -K
- ```
-Launch online WPS bruteforce with the specified first half of the PIN:
- ```shell
- sudo python3 ose.py -i wlan0 -b 00:90:4C:C1:AC:21 -B -p 1234
- ```
- Start WPS push button connection:s
- ```shell
- sudo python3 ose.py -i wlan0 --pbc
- ```
+### `Device or resource busy (-16)`
+This happens because something else is trying to use the interface (Wi-Fi scanner/Network managers)
 
------
+- Android: try re-running the tool few times
+- Linux: try disabling Wi-Fi in the system settings, and kill the Network manager.
+- Alternatively: you can try running OneShot-Extended with ```--iface-down``` argument.
 
-## Troubleshooting
-**"RTNETLINK answers: Operation not possible due to RF-kill"**
- Just run:
-- ```sudo rfkill unblock wifi```
-
-**"Device or resource busy (-16)"**
-- Try disabling Wi-Fi in the system settings and kill the Network manager. Alternatively, you can try running OneShot-Extended with ```--iface-down``` argument.
-
-**The wlan0 interface disappears when Wi-Fi is disabled on Android devices with MediaTek SoC**
+### The wlan0 interface disappears when Wi-Fi is disabled on Android devices with MediaTek SoC
 - Try running Oneshot-Extended with the `--mtk-wifi` flag to initialize Wi-Fi device driver.
 
------
-
 # Acknowledgements
-## Special Thanks
-* `kimocoder, drygdryg, chickendrop89` for extended implementation 
-* `rofl0r` for initial implementation;
-* `Monohrom` for testing, help in catching bugs, some ideas;
-* `Wiire` for developing Pixiewps.
+* `kimocoder, drygdryg` for the foundation of this project
+* `rofl0r` for original oneshot
 
 -----
 
@@ -137,4 +107,3 @@ Launch online WPS bruteforce with the specified first half of the PIN:
 > It is not designed for, and must not be used for, illegal activities such as hacking, unauthorized access, or causing damage to systems or networks.
 > By using this tool, you agree to use it responsibly and ethically, and to comply with all applicable laws and regulations.
 > The developer assumes no responsibility for any misuse of this tool.
-
