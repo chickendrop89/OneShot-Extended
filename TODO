@@ -1,2 +1,1 @@
-1. Rework CLI to use "curses" python module
-2. Add an option to add vulnerable access point to specified vulnwsc.txt upon success
+1. Add an option to add vulnerable access point to specified vulnwsc.txt upon success
