@@ -42,7 +42,7 @@ if __name__ == '__main__':
             '1', encoding='utf-8'
         )
 
-    if not src.utils.ifaceCtl(args.interface, action='up'):
+    if src.utils.ifaceCtl(args.interface, action='up'):
         src.utils.die(f'Unable to up interface \'{args.interface}\'')
 
     while True:
