@@ -99,6 +99,12 @@ def parseArgs():
              'Turn off Wi-Fi in the system settings before using this.'
     )
     parser.add_argument(
+        '--dts', '--dont-touch-settings',
+        action='store_true',
+        help='Don\'t touch the Android Wi-Fi settings on startup and exit. '
+             'Use when having device-specific issues'
+    )
+    parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         help='Verbose output'

@@ -37,7 +37,7 @@ if __name__ == '__main__':
             if args.clear:
                 src.utils.clearScreen()
 
-            if src.utils.isAndroid() is True:
+            if src.utils.isAndroid() is True and args.dts is False:
                 android_network.storeAlwaysScanState()
                 android_network.disableWifi()
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
                 break
 
         finally:
-            if src.utils.isAndroid() is True:
+            if src.utils.isAndroid() is True and args.dts is False:
                 android_network.enableWifi()
 
     if args.iface_down:
