@@ -30,21 +30,6 @@ if __name__ == '__main__':
     if not os.path.exists(pixiewps_dir):
         os.makedirs(pixiewps_dir)
 
-    if args.mtk_wifi:
-        wmtWifi_device = Path('/dev/wmtWifi')
-
-        if not wmtWifi_device.is_char_device():
-            src.utils.die('Unable to activate MediaTek Wi-Fi interface device (--mtk-wifi): '
-                '/dev/wmtWifi does not exist or it is not a character device')
-
-        wmtWifi_device.chmod(0o644)
-        wmtWifi_device.write_text(
-            '1', encoding='utf-8'
-        )
-
-    if src.utils.ifaceCtl(args.interface, action='up'):
-        src.utils.die(f'Unable to up interface \'{args.interface}\'')
-
     while True:
         try:
             android_network = src.wifi.android.AndroidNetwork()
@@ -55,6 +40,21 @@ if __name__ == '__main__':
             if src.utils.isAndroid() is True:
                 android_network.storeAlwaysScanState()
                 android_network.disableWifi()
+
+            if args.mtk_wifi:
+                wmtWifi_device = Path('/dev/wmtWifi')
+
+                if not wmtWifi_device.is_char_device():
+                    src.utils.die('Unable to activate MediaTek Wi-Fi interface device (--mtk-wifi): '
+                        '/dev/wmtWifi does not exist or it is not a character device')
+
+                wmtWifi_device.chmod(0o644)
+                wmtWifi_device.write_text(
+                    '1', encoding='utf-8'
+                )
+
+            if src.utils.ifaceCtl(args.interface, action='up'):
+                src.utils.die(f'Unable to up interface \'{args.interface}\'')
 
             if args.bruteforce:
                 bruteforce_connection = src.wps.bruteforce.Initialize(
