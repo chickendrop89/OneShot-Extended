@@ -43,6 +43,8 @@ Advanced arguments:
   -r, --reverse-scan           : Reverse order of networks in the list of networks. Useful on small displays
   --mtk-wifi                   : Activate MediaTek Wi-Fi interface driver on startup and deactivate it on exit (for internal Wi-Fi adapters implemented in MediaTek SoCs). 
                                : Turn off Wi-Fi in the system settings before using this.
+  --dts, --dont-touch-settings : Don't touch the Android Wi-Fi settings on startup and exit.
+                               : Use when having device-specific issues
   --iface-down                 : Down network interface when the work is finished
   -v, --verbose                : Verbose output
   -h, --help                   : show this help message and exit
