@@ -352,8 +352,14 @@ class Initialize:
     def _cleanup(self):
         """Terminates connections and removes temporary files"""
 
-        self.RETSOCK.close()
-        self.WPAS.terminate()
+        try:
+            self.RETSOCK.close()
+            self.WPAS.terminate()
+        except ImportError:
+            # Ignore errors during interpreter shutdown
+            # Exception: sys.meta_path is None, Python is likely shutting down
+            pass
+
         os.remove(self.RES_SOCKET_FILE)
         shutil.rmtree(self.TEMPDIR, ignore_errors=True)
         os.remove(self.TEMPCONF)
