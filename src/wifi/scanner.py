@@ -190,8 +190,11 @@ class WiFiScanner:
         network_list = {(i + 1): network for i, network in enumerate(networks)}
         network_list_items = list(network_list.items())
 
-        def truncateStr(s: str, length: int, postfix='…') -> str:
+        def truncateStr(s: str | None, length: int, postfix='…') -> str:
             """Truncate string with the specified length."""
+
+            if s is None:
+                return 'UNKNOWN NETWORK'
 
             if len(s) > length:
                 k = length - len(postfix)
