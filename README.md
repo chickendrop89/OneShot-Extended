@@ -86,6 +86,18 @@ Advanced arguments:
  sudo python ose/ose.py -i wlan0
  ```
 
+# Update procedure
+1. Change directory to where OneShot-Extended is cloned
+```
+cd OneShot-Extended
+```
+
+2. Update via git to latest commit, this will revert any local changes
+```
+git fetch
+git reset --hard origin/master
+```
+
 # Troubleshooting
 
 ### `Device or resource busy (-16)`
