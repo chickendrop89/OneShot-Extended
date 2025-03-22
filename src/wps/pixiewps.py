@@ -1,5 +1,7 @@
 import subprocess
 
+from typing import Union
+
 class Data:
     """Stored data used for pixiewps command."""
 
@@ -17,7 +19,7 @@ class Data:
         return (self.PKE and self.PKR and self.E_NONCE and self.AUTHKEY
                 and self.E_HASH1 and self.E_HASH2)
 
-    def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> str | bool:
+    def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> Union[str, bool]:
         """Runs the pixiewps and attempts to extract the WPS pin from the output."""
 
         print('[*] Running Pixiewps…')
