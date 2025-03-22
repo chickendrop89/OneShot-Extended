@@ -12,9 +12,9 @@ import src.utils
 import src.args
 
 if __name__ == '__main__':
-    # Python 3.8 is required
-    if sys.hexversion < 0x030800F0:
-        src.utils.die('The program requires Python 3.8 and above')
+    # Python 3.9 is required
+    if sys.version_info < (3, 9):
+        src.utils.die('The program requires Python 3.9 and above')
 
     # Running as root is required to use the interface
     if os.getuid() != 0:
