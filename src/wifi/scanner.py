@@ -254,7 +254,7 @@ class WiFiScanner:
             network_list_items = network_list_items[::-1]
         for n, network in network_list_items:
             number = f'{n})'
-            model = f'{network['Model']} {network['Model number']}'
+            model = f'{network["Model"]} {network["Model number"]}'
             essid = truncateStr(network['ESSID'], 25)
             device_name = truncateStr(network['Device name'], 27)
             line = row.format(
