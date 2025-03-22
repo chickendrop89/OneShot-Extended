@@ -8,7 +8,7 @@ This is an improved version of the original OneShot
  - Ability to save the AP right into the Network Manager of your system
  - Ability to clear the screen every scan
  - Minor changes (e.g, WPA3TM indication, better vulnwsc detection, RF-Kill handling)
- - Works on modern python versions (>3.8)
+ - Works on modern python versions (>3.9)
  - Improved Android support
 
 # Features
