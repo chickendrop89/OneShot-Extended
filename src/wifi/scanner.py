@@ -253,10 +253,11 @@ class WiFiScanner:
         if args.reverse_scan:
             network_list_items = network_list_items[::-1]
         for n, network in network_list_items:
-            number = f'{n})'
-            model = f'{network['Model']} {network['Model number']}'
+            # (FOR COMPATIBILITY) pylint: disable=inconsistent-quotes
+            model = f'{network["Model"]} {network["Model number"]}'
             essid = truncateStr(network['ESSID'], 25)
             device_name = truncateStr(network['Device name'], 27)
+            number = f'{n})'
             line = row.format(
                 number, network['BSSID'], essid,
                 network['Security type'], network['Level'],
