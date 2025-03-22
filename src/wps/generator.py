@@ -1,3 +1,5 @@
+from typing import Union
+
 class NetworkAddress:
     """Handles MAC addresses"""
 
@@ -145,7 +147,7 @@ class WPSpin:
 
         return pin
 
-    def getLikely(self, bssid: str) -> list | None:
+    def getLikely(self, bssid: str) -> Union[list, None]:
         """Returns a likely pin."""
 
         res = self._getSuggestedList(bssid)
