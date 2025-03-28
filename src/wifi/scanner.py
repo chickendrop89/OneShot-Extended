@@ -194,9 +194,6 @@ class WiFiScanner:
         def truncateStr(s: Union[str, None], length: int, postfix='…') -> str:
             """Truncate string with the specified length."""
 
-            if s is None:
-                return 'UNKNOWN NETWORK'
-
             if len(s) > length:
                 k = length - len(postfix)
                 s = s[:k] + postfix
