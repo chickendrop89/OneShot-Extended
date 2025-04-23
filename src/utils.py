@@ -17,8 +17,8 @@ import pathlib
 import subprocess
 
 USER_HOME = str(pathlib.Path.home())
-SESSIONS_DIR = f'{USER_HOME}/.OSE/sessions/'
-PIXIEWPS_DIR = f'{USER_HOME}/.OSE/pixiewps/'
+SESSIONS_DIR = f'{USER_HOME}/.OneShot-Extended/sessions/'
+PIXIEWPS_DIR = f'{USER_HOME}/.OneShot-Extended/pixiewps/'
 REPORTS_DIR  = f'{os.getcwd()}/reports/'
 
 def isAndroid():
