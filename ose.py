@@ -41,6 +41,18 @@ def checkRequirements():
 def setupDirectories():
     """Create required directories"""
 
+    # We recently changed the PIXIEWPS_DIR and SESSIONS_DIR path
+    # Rename older .OSE data dir to .OneShot-Extended, and maintain compatibility
+    old_dir = os.path.expanduser('~/.OSE')
+    new_dir = os.path.expanduser('~/.OneShot-Extended')
+
+    if os.path.exists(old_dir):
+        try:
+            os.rename(old_dir, new_dir)
+            print('[*] Renamed legacy data directory')
+        except OSError as e:
+            print(f'[!] Failed to rename data directory: {e}')
+
     for directory in [src.utils.SESSIONS_DIR, src.utils.PIXIEWPS_DIR]:
         if not os.path.exists(directory):
             os.makedirs(directory)
