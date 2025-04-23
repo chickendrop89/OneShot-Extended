@@ -2,6 +2,8 @@
 
 import os
 import sys
+
+from shutil import which
 from pathlib import Path
 
 import src.wifi.android
@@ -19,6 +21,9 @@ def checkRequirements():
 
     if os.getuid() != 0:
         src.utils.die('Run it as root')
+
+    if not which('pixiewps'):
+        src.utils.die('Pixiewps is not installed, or not in PATH')
 
 def setupDirectories():
     """Create required directories"""
