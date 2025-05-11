@@ -143,7 +143,7 @@ def main():
                 src.utils.clearScreen()
 
             if src.utils.isAndroid() is True and not args.dts:
-                setupAndroidWifi(android_network, args)
+                setupAndroidWifi(android_network)
 
             if args.mtk_wifi:
                 wmt_wifi_device = Path('/dev/wmtWifi')
