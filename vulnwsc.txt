@@ -628,3 +628,6 @@ Belkin AP EV-2012-09-01
 Trendnet router TEW-625br
 Trendnet router TEW-651br
 Sitecom Wireless Router 300N X2 300N
+Modem/Router EV-2010-09-20
+RB06 RT2860
+RB03 RT2860
