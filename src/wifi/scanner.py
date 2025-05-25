@@ -102,8 +102,14 @@ class WiFiScanner:
             networks[-1]['BSSID'] = result.group(1).upper()
 
         def handleEssid(_line, result, networks):
-            d = result.group(1)
-            networks[-1]['ESSID'] = codecs.decode(d, 'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
+            try:
+                d = result.group(1)
+                essid = networks[-1]['ESSID'] = codecs.decode(d,'unicode-escape').encode('latin1').decode('utf-8', errors='replace')
+
+                # Check if empty or only contains null/whitespace bytes
+                networks[-1]['ESSID'] = essid if essid.strip('\x00 ') else '<hidden>'
+            except (AttributeError, IndexError):
+                networks[-1]['ESSID'] = '<hidden>'
 
         def handleLevel(_line, result, networks):
             networks[-1]['Level'] = int(float(result.group(1)))
