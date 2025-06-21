@@ -256,7 +256,7 @@ class WPSpin:
 
     @staticmethod
     def _pinASUS(bssid: str):
-        b = [int(i, 16) for i in bssid.string.split(':')]
+        b = [int(i, 16) for i in str(bssid).split(':')]
         pin = ''
         for i in range(7):
             pin += str((b[i % 6] + b[5]) % (10 - (i + b[1] + b[2] + b[3] + b[4] + b[5]) % 7))
@@ -265,7 +265,7 @@ class WPSpin:
 
     @staticmethod
     def _pinAirocon(bssid: str):
-        b = [int(i, 16) for i in bssid.string.split(':')]
+        b = [int(i, 16) for i in str(bssid).split(':')]
         pin = ((b[0] + b[1]) % 10)\
         + (((b[5] + b[0]) % 10) * 10)\
         + (((b[4] + b[5]) % 10) * 100)\
