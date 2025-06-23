@@ -105,7 +105,7 @@ class Initialize:
         generator    = src.wps.generator.WPSpin()
         collector    = src.wifi.collector.WiFiCollector()
 
-        if not pin:
+        if pin is None:
             if pixiemode:
                 try:
                     filename = f'''{pixiewps_dir}{bssid.replace(':', '').upper()}.run'''
