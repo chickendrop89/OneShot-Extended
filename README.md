@@ -13,6 +13,7 @@ This is an improved version of the original OneShot
 
 # Features
  - [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack)
+ - Null Pin attack
  - Offline WPS PIN generating algorithm
  - [Online WPS bruteforce](https://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf)
  - Wi-Fi scanner with highlighting based on iw;
@@ -25,7 +26,7 @@ Required arguments:
 
 Optional arguments:
   -b, --bssid BSSID            : BSSID of the target AP
-  -p, --pin PIN                : Use the specified pin (arbitrary string or 4/8 digit pin)
+  -p, --pin PIN                : Use the specified pin (arbitrary string or 4/8 digit pin). Enter a blank pin (e.g. '') for a Null Pin attack
   -K, --pixie-dust             : Run Pixie Dust attack
   -F, --pixie-force            : Run Pixiewps with --force option (bruteforce full range)
   -B, --bruteforce             : Run online bruteforce attack
