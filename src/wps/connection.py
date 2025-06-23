@@ -104,7 +104,8 @@ class Initialize:
         pixiewps_dir = src.utils.PIXIEWPS_DIR
         generator    = src.wps.generator.WPSpin()
         collector    = src.wifi.collector.WiFiCollector()
-
+        
+        # Allow empty string ('') as valid pin (e.g., for null pin attack)
         if pin is None:
             if pixiemode:
                 try:
