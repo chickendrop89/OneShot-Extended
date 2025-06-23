@@ -6,6 +6,7 @@ This is an improved version of the original OneShot
 ## Advantages over original OneShot
  - Highlighting of a vulnerable WPS version (1.0) in the scanner
  - Ability to save the AP right into the Network Manager of your system
+ - Ability to do a WPS Null/blank pin attack
  - Ability to clear the screen every scan
  - Minor changes (e.g, WPA3TM indication, better vulnwsc detection, RF-Kill handling)
  - Works on modern python versions (>3.9)
@@ -25,7 +26,7 @@ Required arguments:
 
 Optional arguments:
   -b, --bssid BSSID            : BSSID of the target AP
-  -p, --pin PIN                : Use the specified pin (arbitrary string or 4/8 digit pin)
+  -p, --pin PIN                : Use the specified pin (arbitrary string or 4/8 digit pin). Enter a blank pin (e.g. '') for a Null Pin attack
   -K, --pixie-dust             : Run Pixie Dust attack
   -F, --pixie-force            : Run Pixiewps with --force option (bruteforce full range)
   -B, --bruteforce             : Run online bruteforce attack
