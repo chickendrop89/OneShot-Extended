@@ -44,7 +44,8 @@ class Data:
 
         try:
             command_output = subprocess.run(command,
-                encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                encoding='utf-8'
             )
         except (subprocess.CalledProcessError, FileNotFoundError) as error:
             return print(f'[!] Pixiewps has exited on error: \n {error}')
