@@ -42,9 +42,12 @@ class Data:
             # Convert the command array into a string
             print(' '.join(command))
 
-        command_output = subprocess.run(command,
-            encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        )
+        try:
+            command_output = subprocess.run(command,
+                encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError) as error:
+            return print(f'[!] Pixiewps has exited on error: \n {error}')
 
         print(command_output.stdout)
 
