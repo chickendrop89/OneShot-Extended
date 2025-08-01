@@ -68,6 +68,8 @@ class Initialize:
         self.RETSOCK = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         self.RETSOCK.bind(self.RES_SOCKET_FILE)
 
+        self.DISCONNECT_COUNT = 0  # Add counter
+
     @staticmethod
     def _getHex(line: str) -> str:
         """Filters WPA Supplicant output, and removes whitespaces"""
@@ -328,9 +330,11 @@ class Initialize:
 
         elif 'WPS-TIMEOUT' in line:
             print('[-] Warning: Received WPS-TIMEOUT')
-            
+
         elif 'NL80211_CMD_DEL_STATION' in line:
-            print("[-] Disconnected")
+            self.DISCONNECT_COUNT += 1
+            if self.DISCONNECT_COUNT == 5:
+                print('[-] Received NL80211 DEL_STATION too many times. There is interference ⚠')
 
         elif pbc_mode and ('selected BSS ' in line):
             bssid = line.split('selected BSS ')[-1].split()[0].upper()
