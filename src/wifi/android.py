@@ -25,12 +25,20 @@ class AndroidNetwork:
 
         settings_cmd = ['settings', 'get', 'global', 'wifi_scan_always_enabled']
 
-        is_scanning_on = subprocess.run(settings_cmd,
-            encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True
-        )
-        is_scanning_on = is_scanning_on.stdout.strip()
+        try:
+            is_scanning_on = subprocess.run(
+                settings_cmd,
+                encoding='utf-8',
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=True
+            )
+            is_scanning_on = is_scanning_on.stdout.strip()
 
-        if is_scanning_on == '1':
+            if is_scanning_on == '1':
+                self.ENABLED_SCANNING = 1
+        except subprocess.CalledProcessError:
+            print('[!] Failed to get initial Wi-Fi scanning state, assuming it\'s enabled')
             self.ENABLED_SCANNING = 1
 
     def disableWifi(self, force_disable: bool = False, whisper: bool = False):
@@ -43,11 +51,17 @@ class AndroidNetwork:
         wifi_disable_always_scanning_cmd = ['cmd', '-w', 'wifi', 'set-scan-always-available', 'disabled']
 
         # Disable Android Wi-Fi scanner
-        subprocess.run(wifi_disable_scanner_cmd)
+        try:
+            subprocess.run(wifi_disable_scanner_cmd)
+        except subprocess.CalledProcessError:
+            print('[!] Failed to disable Wi-Fi scanner, skipping')
 
         # Always scanning for networks causes the interface to be occupied by android
         if self.ENABLED_SCANNING == 1 or force_disable is True:
-            subprocess.run(wifi_disable_always_scanning_cmd)
+            try:
+                subprocess.run(wifi_disable_always_scanning_cmd)
+            except subprocess.CalledProcessError:
+                print('[!] Failed to disable always-on Wi-Fi scanning, skipping')
 
         time.sleep(3)
 
@@ -61,7 +75,13 @@ class AndroidNetwork:
         wifi_enable_always_scanning_cmd = ['cmd', '-w', 'wifi', 'set-scan-always-available', 'enabled']
 
         # Enable Android Wi-Fi scanner
-        subprocess.run(wifi_enable_scanner_cmd)
+        try:
+            subprocess.run(wifi_enable_scanner_cmd)
+        except subprocess.CalledProcessError:
+            print('[!] Failed to enable Wi-Fi scanner, skipping')
 
         if self.ENABLED_SCANNING == 1 or force_enable is True:
-            subprocess.run(wifi_enable_always_scanning_cmd)
+            try:
+                subprocess.run(wifi_enable_always_scanning_cmd)
+            except subprocess.CalledProcessError:
+                print('[!] Failed to enable always-on Wi-Fi scanning, skipping')
