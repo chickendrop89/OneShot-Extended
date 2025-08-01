@@ -179,16 +179,19 @@ class Initialize:
             f'-c{self.TEMPCONF}'
         ])
 
-        self.WPAS = subprocess.Popen(wpa_supplicant_cmd,
-            encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        )
+        try:
+            self.WPAS = subprocess.Popen(wpa_supplicant_cmd,
+                encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError) as error:
+            return print (f'[!] Failed to open wpa_supplicant \n {error}')
 
         # Waiting for wpa_supplicant control interface initialization
         while True:
             ret = self.WPAS.poll()
 
             if ret is not None and ret != 0:
-                raise ValueError('wpa_supplicant returned an error: ' + self.WPAS.communicate()[0])
+                print(f'[!] wpa_supplicant returned an error: \n {self.WPAS.communicate()[0]}')
             if os.path.exists(self.WPAS_CTRL_PATH):
                 break
 
