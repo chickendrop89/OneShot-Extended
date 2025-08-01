@@ -174,9 +174,12 @@ class WiFiScanner:
         }
 
         command = ['iw', 'dev', f'{self.INTERFACE}', 'scan']
-        iw_scan_process = subprocess.run(command,
-            encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        )
+        try:
+            iw_scan_process = subprocess.run(command,
+                encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError) as error:
+            return print (f'[!] Failed to perform an iw scan: \n {error}')
 
         lines = iw_scan_process.stdout.splitlines()
 
