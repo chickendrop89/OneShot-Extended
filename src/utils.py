@@ -30,21 +30,30 @@ def ifaceCtl(interface: str, action: str):
     """Put an interface up or down."""
 
     command = ['ip', 'link', 'set', f'{interface}', f'{action}']
-    command_output = subprocess.run(
-        command, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
+
+    try:
+        command_output = subprocess.run(command,
+            encoding='utf-8', stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError) as error:
+        print (f'[!] Can not control interface with ip link: \n {error}')
+
     command_output_stripped = command_output.stdout.strip()
-    
-    # Fix "RNETLINK: No such device" issues on specific android devices
+
     if isAndroid() is False:
         def _rfKillUnblock():
             rfkill_command = ['rfkill', 'unblock', 'wifi']
-            subprocess.run(rfkill_command, check=True)
+
+            try:
+                subprocess.run(rfkill_command, check=True)
+            except (subprocess.CalledProcessError, FileNotFoundError) as error:
+                print(f'[!] Failed to unblock interface, not continuing: \n {error}')
 
         if 'RF-kill' in command_output_stripped:
             print('[!] RF-kill is blocking the interface, unblocking')
-            _rfKillUnblock()  # Will throw CalledProcessError if fails
-            return 0
+            _rfKillUnblock()
+            return
 
     if command_output.returncode != 0:
         print(f'[!] {command_output_stripped}')
