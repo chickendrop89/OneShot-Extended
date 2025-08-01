@@ -50,13 +50,20 @@ class WiFiCollector:
 
         # Detect an android system
         if src.utils.isAndroid() is True:
-            # The Wi-Fi scanner needs to be active in order to add network
-            self.ANDROID_NETWORK.enableWifi(force_enable=True, whisper=True)
-            subprocess.run(android_connect_cmd, check=True)
+            try:
+                # The Wi-Fi scanner needs to be active in order to add network
+                self.ANDROID_NETWORK.enableWifi(force_enable=True, whisper=True)
+                subprocess.run(android_connect_cmd, check=True)
+            except subprocess.CalledProcessError as error:
+                return print(f'[!] Failed to add network to Android network manager: \n {error}')
 
         # Detect NetworkManager
         elif which('nmcli'):
-            subprocess.run(networkmanager_connect_cmd, check=True)
+            try:
+                subprocess.run(networkmanager_connect_cmd, check=True)
+            except subprocess.CalledProcessError as error:
+                return print(f'[!] Failed to add network to NetworkManager: \n {error}')
+
 
         print('[+] Access Point was saved to your network manager')
 
