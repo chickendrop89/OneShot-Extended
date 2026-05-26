@@ -29,7 +29,7 @@ class ConnectionStatus:
     """Stores WPS connection details and status."""
 
     def __init__(self):
-        self.STATUS = ''   # Must be WSC_NACK, WPS_FAIL or GOT_PSK
+        self.STATUS = '' # Must be WSC_NACK, WPS_FAIL, WPS_TIMEOUT or GOT_PSK
         self.LAST_M_MESSAGE = 0
         self.ESSID = ''
         self.BSSID = ''
@@ -335,6 +335,7 @@ class Initialize:
 
         elif 'WPS-TIMEOUT' in line:
             print('[-] Received WPS-TIMEOUT. Something might be wrong with the interface ⚠')
+            self.CONNECTION_STATUS.STATUS = 'WPS_TIMEOUT'
 
         elif 'NL80211_CMD_DEL_STATION' in line:
             self.DISCONNECT_COUNT += 1
@@ -371,6 +372,8 @@ class Initialize:
         self.CONNECTION_STATUS.clear()
         self.WPAS.stdout.read(300) # Clean the pipe
 
+        timeout_retry_count = 1
+
         if not verbose:
             verbose = self.PRINT_DEBUG
 
@@ -398,7 +401,7 @@ class Initialize:
         while True:
             res = self._handleWpas(pixiemode=pixiemode, pbc_mode=pbc_mode, verbose=verbose)
 
-            if not res:
+            if not res or self.CONNECTION_STATUS.STATUS in ('WSC_NACK', 'GOT_PSK', 'WPS_FAIL'):
                 break
             if self.CONNECTION_STATUS.STATUS == 'WSC_NACK':
                 break
@@ -406,6 +409,30 @@ class Initialize:
                 break
             if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
                 break
+
+            if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
+                timeout_retry_count += 1
+
+                print(f'[*] Retrying after WPS timeout (attempt {timeout_retry_count})…')
+
+                try:
+                    self.WPAS.terminate()
+                    self.WPAS.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    self.WPAS.kill()
+
+                self._initWpaSupplicant()
+                time.sleep(1) # Brief delay before retry
+
+                # Resend the WPS command
+                r = self._sendAndReceive(cmd)
+                if 'OK' not in r:
+                    self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
+                    print(self._explainWpasNotOkStatus(cmd, r))
+                    return False
+
+                self.CONNECTION_STATUS.clear()
+                continue
 
         self._sendOnly('WPS_CANCEL')
         return False
