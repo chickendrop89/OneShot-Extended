@@ -71,10 +71,15 @@ class WiFiCollector:
     @staticmethod
     def writeResult(bssid: str, essid: str, wps_pin: str, wpa_psk: str):
         """Writes the success result to a stored.{txt,csv} file."""
-        #TODO: The same result can be written multiple times
 
         reports_dir = src.utils.REPORTS_DIR
         filename = reports_dir + 'stored'
+
+        # Prevent duplicate writes if the BSSID + PSK combo already exists
+        if os.path.isfile(filename + '.csv'):
+            with open(filename + '.csv', 'r', encoding='utf-8') as file:
+                if any(f'"{bssid}"' in line and f'"{wpa_psk}"' in line for line in file):
+                    return logger.info(f'[*] Credentials for {essid} ({bssid}) are already saved.')
 
         if not os.path.exists(reports_dir):
             os.makedirs(reports_dir)
