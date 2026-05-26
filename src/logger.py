@@ -15,7 +15,15 @@ import logging
 import sys
 
 class ColorFormatter(logging.Formatter):
-    """Custom formatter that adds log level prefixes in the format"""
+    """Custom formatter that adds colored log level prefixes"""
+
+    COLORS = {
+        '[*]': '\033[1;34m',  # Bold Blue
+        '[+]': '\033[1;32m',  # Bold Green
+        '[-]': '\033[1;33m',  # Bold Yellow
+        '[!]': '\033[1;31m',  # Bold Red
+        'RESET': '\033[0m'
+    }
 
     LEVEL_PREFIXES = {
         logging.DEBUG: '[*]',
@@ -26,12 +34,18 @@ class ColorFormatter(logging.Formatter):
     }
 
     def format(self, record):
-        prefix = self.LEVEL_PREFIXES.get(record.levelno, '[*]')
+        msg_str = str(record.msg)
 
-        if record.msg:
-            # Avoid double prefixes if the message already has one
-            if not str(record.msg).startswith(('[*]', '[+]', '[-]', '[!]')):
-                record.msg = f'{prefix} {record.msg}'
+        prefix = self.LEVEL_PREFIXES.get(record.levelno, '[*]')
+        for pfx in ['[*]', '[+]', '[-]', '[!]']:
+            if msg_str.startswith(pfx):
+                prefix = pfx
+                record.msg = msg_str[len(pfx):].lstrip()
+                break
+
+        color = self.COLORS.get(prefix, '')
+        reset = self.COLORS['RESET']
+        record.msg = f"{color}{prefix}{reset} {record.msg}"
 
         return super().format(record)
 
