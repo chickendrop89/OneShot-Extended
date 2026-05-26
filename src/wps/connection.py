@@ -260,7 +260,7 @@ class Initialize:
         elif 'Received M' in line:
             n = int(line.split('Received M')[1])
             self.CONNECTION_STATUS.LAST_M_MESSAGE = n
-            logger.info(f'Received WPS Message M{n}')
+            logger.success(f'Received WPS Message M{n}')
             if n == 5:
                 logger.info('The first half of the PIN is valid')
 
@@ -318,7 +318,7 @@ class Initialize:
             logger.info('Authenticating…')
 
         elif 'Authentication response' in line:
-            logger.info('Authenticated')
+            logger.success('Authenticated')
 
         elif 'Trying to associate with' in line:
             self.CONNECTION_STATUS.STATUS = 'associating'
@@ -338,7 +338,7 @@ class Initialize:
             logger.info('Sending EAPOL Start…')
 
         elif 'EAP entering state IDENTITY' in line:
-            logger.info('Received Identity Request')
+            logger.success('Received Identity Request')
 
         elif 'using real identity' in line:
             logger.info('Sending Identity Response…')
