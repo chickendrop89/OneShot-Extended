@@ -343,7 +343,8 @@ class Initialize:
         elif 'NL80211_CMD_DEL_STATION' in line:
             self.DISCONNECT_COUNT += 1
             if self.DISCONNECT_COUNT == 5:
-                logger.warning('Received NL80211 DEL_STATION too many times. There is interference ⚠')
+                logger.warning('Received NL80211 DEL_STATION too many times 🠋')
+                logger.warning('This could mean that some other process is trying to use the interface')
 
         elif pbc_mode and ('selected BSS ' in line):
             bssid = line.split('selected BSS ')[-1].split()[0].upper()
