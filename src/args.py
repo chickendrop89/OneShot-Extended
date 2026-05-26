@@ -1,5 +1,5 @@
 #  OneShot-Extended (WPS penetration testing utility) is a fork of the tool with extra features
-#  Copyright (C) 2025 chickendrop89
+#  Copyright (C) 2026 chickendrop89
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ def parseArgs():
     """Parse arguments passed to the main python script."""
 
     parser = argparse.ArgumentParser(
-        description='OneShot-Extended (c) 2024 chickendrop89',
+        description='OneShot-Extended (c) 2026 chickendrop89',
         epilog='Example: %(prog)s -i wlan0 -b 00:90:4C:C1:AC:21 -K'
     )
 
