@@ -65,7 +65,7 @@ def ifaceCtl(interface: str, action: str):
 def clearScreen():
     """Clear the terminal screen."""
 
-    os.system('clear')
+    subprocess.run(['clear'], check=False)
 
 def die(text: str):
     """Print an error and exit with non-zero exit code."""
