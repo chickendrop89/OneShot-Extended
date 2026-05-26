@@ -36,6 +36,7 @@ class ConnectionStatus:
         self.ESSID = ''
         self.BSSID = ''
         self.WPA_PSK = ''
+        self.IS_LOCKED = False
 
     def isFirstHalfValid(self) -> bool:
         """Checks if the first half of the PIN is valid."""
@@ -247,6 +248,8 @@ class Initialize:
 
         if 'M2D' in line:
             logger.warning('Received WPS Message M2D')
+            self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
+            self.CONNECTION_STATUS.IS_LOCKED = True
             src.utils.die('[!] Error: AP is not ready yet, try later')
 
         if 'Building Message M' in line:
@@ -264,6 +267,10 @@ class Initialize:
         elif 'Received WSC_NACK' in line:
             self.CONNECTION_STATUS.STATUS = 'WSC_NACK'
             logger.warning('Received WSC NACK')
+
+            if self.CONNECTION_STATUS.LAST_M_MESSAGE < 3:
+                self.CONNECTION_STATUS.IS_LOCKED = True
+
             logger.error('Error: wrong PIN code')
 
         elif 'Enrollee Nonce' in line and 'hexdump' in line:

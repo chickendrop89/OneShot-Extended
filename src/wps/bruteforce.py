@@ -23,6 +23,8 @@ import src.wps.connection
 import src.utils
 import src.args
 
+args = src.args.parseArgs()
+
 class BruteforceStatus:
     """Stores bruteforce details and status."""
 
@@ -90,13 +92,18 @@ class Initialize:
 
             self.CONNECTION.singleConnection(bssid, pin)
 
-            if self.CONNECTION_STATUS.isFirstHalfValid():
+            if self.CONNECTION.CONNECTION_STATUS.IS_LOCKED:
+                logger.warning(f'{bssid} is WPS LOCKED. Retrying PIN {pin} in {args.timeout}s…')
+                time.sleep(args.timeout)
+                continue
+
+            if self.CONNECTION.CONNECTION_STATUS.isFirstHalfValid():
                 logger.info('First half found')
                 return first_half
 
-            if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
+            if self.CONNECTION.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
                 logger.warning('WPS transaction failed, re-trying last pin')
-                return self._firstHalfBruteforce(bssid, first_half)
+                return self._firstHalfBruteforce(bssid, first_half, delay)
 
             first_half = str(int(first_half) + 1).zfill(4)
             self.BRUTEFORCE_STATUS.registerAttempt(first_half)
@@ -118,12 +125,17 @@ class Initialize:
 
             self.CONNECTION.singleConnection(bssid, pin)
 
-            if self.CONNECTION_STATUS.LAST_M_MESSAGE > 6:
+            if self.CONNECTION.CONNECTION_STATUS.IS_LOCKED:
+                logger.warning(f'{bssid} is WPS LOCKED. Retrying PIN {pin} in {args.timeout}s…')
+                time.sleep(args.timeout)
+                continue
+
+            if self.CONNECTION.CONNECTION_STATUS.LAST_M_MESSAGE > 6:
                 return pin
 
-            if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
+            if self.CONNECTION.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
                 logger.warning('WPS transaction failed, re-trying last pin')
-                return self._secondHalfBruteforce(bssid, first_half, second_half)
+                return self._secondHalfBruteforce(bssid, first_half, second_half, delay)
 
             second_half = str(int(second_half) + 1).zfill(3)
             self.BRUTEFORCE_STATUS.registerAttempt(first_half + second_half)

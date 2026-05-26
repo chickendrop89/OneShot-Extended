@@ -77,6 +77,12 @@ def parseArgs():
         help='Set the delay between pin attempts'
     )
     parser.add_argument(
+        '-t', '--timeout',
+        type=float,
+        default=60,
+        help='Set the timeout for retrying after WPS lock (default: 60s)'
+    )
+    parser.add_argument(
         '-w', '--write',
         action='store_true',
         help='Write credentials to the file on success'
