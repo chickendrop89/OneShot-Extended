@@ -25,12 +25,13 @@ class Data:
         self.E_HASH2 = ''
         self.AUTHKEY = ''
         self.E_NONCE = ''
+        self.R_NONCE = ''
+        self.BSSID = ''
 
     def getAll(self):
         """Output all pixiewps related variables."""
 
-        return (self.PKE and self.PKR and self.E_NONCE and self.AUTHKEY
-                and self.E_HASH1 and self.E_HASH2)
+        return all([self.PKE, self.PKR, self.E_NONCE, self.R_NONCE, self.AUTHKEY, self.E_HASH1, self.E_HASH2, self.BSSID])
 
     def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> Union[str, bool]:
         """Runs the pixiewps and attempts to extract the WPS pin from the output."""
@@ -75,8 +76,13 @@ class Data:
             '--e-hash1', self.E_HASH1,
             '--e-hash2', self.E_HASH2,
             '--authkey', self.AUTHKEY,
-            '--e-nonce', self.E_NONCE
+            '--e-nonce', self.E_NONCE,
+            '--r-nonce', self.R_NONCE,
+            '--e-bssid', self.BSSID
         ])
+
+        # Enable all modes
+        pixiecmd.extend(['--mode', '1,2,3,4,5'])
 
         if full_range:
             pixiecmd.append('--force')

@@ -266,6 +266,9 @@ class Initialize:
         elif 'Enrollee Nonce' in line and 'hexdump' in line:
             self._handle_pixie_data('E_NONCE', line, 16 * 2, pixiemode)
 
+        elif 'Registrar Nonce' in line and 'hexdump' in line:
+            self._handle_pixie_data('R_NONCE', line, 16 * 2, pixiemode)
+
         elif 'DH own Public Key' in line and 'hexdump' in line:
             self._handle_pixie_data('PKR', line, 192 * 2, pixiemode)
 
@@ -381,6 +384,9 @@ class Initialize:
         else:
             print(f'[*] Trying PIN \'{pin}\'…')
             cmd = f'WPS_REG {bssid} {pin}'
+
+        if bssid:
+            self.PIXIE_CREDS.BSSID = bssid.replace(':', '').upper()
 
         r = self._sendAndReceive(cmd)
 
