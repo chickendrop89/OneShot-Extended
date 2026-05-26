@@ -9,7 +9,7 @@ This is an improved version of the original OneShot
  - Ability to do a WPS Null/blank pin attack
  - Ability to clear the screen every scan
  - Minor changes (e.g, WPA3TM indication, better vulnwsc detection, RF-Kill handling)
- - Works on modern python versions (>3.9)
+ - Works on modern python versions (>3.10)
  - Improved Android support
 
 # Features

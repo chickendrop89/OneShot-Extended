@@ -16,7 +16,6 @@ import csv
 import codecs
 import subprocess
 
-from typing import Union
 from src import logger
 from src.utils import REPORTS_DIR
 
@@ -79,7 +78,7 @@ class WiFiScanner:
             except IndexError:
                 logger.warning('Invalid number')
 
-    def _iwScanner(self) -> Union[dict[int, dict], bool]:
+    def _iwScanner(self) -> dict[int, dict] | bool:
         """Parsing iw scan results."""
 
         def handleNetwork(_line, result, networks):
@@ -211,7 +210,7 @@ class WiFiScanner:
         network_list = {(i + 1): network for i, network in enumerate(networks)}
         network_list_items = list(network_list.items())
 
-        def truncateStr(s: Union[str, None], length: int, postfix='…') -> str:
+        def truncateStr(s: str | None, length: int, postfix='…') -> str:
             """Truncate string with the specified length."""
 
             if len(s) > length:

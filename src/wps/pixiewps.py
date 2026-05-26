@@ -13,7 +13,6 @@
 
 import subprocess
 
-from typing import Union
 from src import logger
 
 class Data:
@@ -34,7 +33,7 @@ class Data:
 
         return all([self.PKE, self.PKR, self.E_NONCE, self.R_NONCE, self.AUTHKEY, self.E_HASH1, self.E_HASH2, self.BSSID])
 
-    def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> Union[str, bool]:
+    def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> str | bool:
         """Runs the pixiewps and attempts to extract the WPS pin from the output."""
 
         logger.info('Running Pixiewps…')

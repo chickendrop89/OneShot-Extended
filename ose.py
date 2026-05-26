@@ -30,8 +30,8 @@ import src.args
 def checkRequirements():
     """Verify requirements are met"""
 
-    if sys.version_info < (3, 9):
-        src.utils.die('The program requires Python 3.9 and above')
+    if sys.version_info < (3, 10):
+        src.utils.die('The program requires Python 3.10 and above')
 
     if os.getuid() != 0:
         src.utils.die('Run it as root')

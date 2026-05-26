@@ -16,7 +16,6 @@ import statistics
 import time
 
 from datetime import datetime
-from typing import Union
 from src import logger
 
 import src.wps.generator
@@ -80,7 +79,7 @@ class Initialize:
             interface
         )
 
-    def _firstHalfBruteforce(self, bssid: str, first_half: str, delay: float = None) -> Union[str, bool]:
+    def _firstHalfBruteforce(self, bssid: str, first_half: str, delay: float = None) -> str | bool:
         """Attempts to bruteforce the first half of a WPS PIN"""
 
         checksum = self.GENERATOR.checksum
@@ -108,7 +107,7 @@ class Initialize:
         logger.warning('First half not found')
         return False
 
-    def _secondHalfBruteforce(self, bssid: str, first_half: str, second_half: str, delay: float = None) -> Union[str, bool]:
+    def _secondHalfBruteforce(self, bssid: str, first_half: str, second_half: str, delay: float = None) -> str | bool:
         """Attempts to bruteforce the second half of a WPS PIN"""
 
         checksum = self.GENERATOR.checksum

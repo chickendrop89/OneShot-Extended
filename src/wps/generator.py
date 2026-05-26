@@ -11,7 +11,6 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 
-from typing import Union
 from src import logger
 
 class NetworkAddress:
@@ -161,7 +160,7 @@ class WPSpin:
 
         return pin
 
-    def getLikely(self, bssid: str) -> Union[list, None]:
+    def getLikely(self, bssid: str) -> list | None:
         """Returns a likely pin."""
 
         res = self._getSuggestedList(bssid)
