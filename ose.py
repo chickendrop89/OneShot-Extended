@@ -34,11 +34,19 @@ import src.args
 def checkRequirements():
     """Verify requirements are met"""
 
+    required_binaries = [
+        'pixiewps',
+        'wpa_supplicant',
+        'iw', 'ip',
+        'rfkill'
+    ]
+    missing = [b for b in required_binaries if not which(b)]
+
+    if missing:
+        src.utils.die(f"Missing required utilities: {', '.join(missing)}")
+
     if os.getuid() != 0:
         src.utils.die('Run it as root')
-
-    if not which('pixiewps'):
-        src.utils.die('Pixiewps is not installed, or not in PATH')
 
 def setupDirectories():
     """Create required directories"""
