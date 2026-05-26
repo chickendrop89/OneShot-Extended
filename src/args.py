@@ -33,21 +33,34 @@ def parseArgs():
         type=str,
         help='BSSID of the target AP'
     )
-    parser.add_argument(
+
+    attack_pin_group = parser.add_mutually_exclusive_group()
+    attack_pin_group.add_argument(
+        '-B', '--bruteforce',
+        action='store_true',
+        help='Run online bruteforce attack'
+    )
+    attack_pin_group.add_argument(
+        '--pbc', '--push-button-connect',
+        action='store_true',
+        help='Run WPS push button connection'
+    )
+    attack_pin_group.add_argument(
         '-p', '--pin',
         type=str,
         help='Use the specified pin (arbitrary string or 4/8 digit pin)'
     )
-    parser.add_argument(
+    attack_pin_group.add_argument(
         '-N', '--null-pin',
         action='store_true',
         help='Run a Null pin attack (00000000)'
     )
-    parser.add_argument(
+    attack_pin_group.add_argument(
         '-K', '--pixie-dust',
         action='store_true',
         help='Run Pixie Dust attack'
     )
+
     parser.add_argument(
         '-F', '--pixie-force',
         action='store_true',
@@ -57,16 +70,6 @@ def parseArgs():
         '-X', '--show-pixie-cmd',
         action='store_true',
         help='Always print Pixiewps command'
-    )
-    parser.add_argument(
-        '-B', '--bruteforce',
-        action='store_true',
-        help='Run online bruteforce attack'
-    )
-    parser.add_argument(
-        '--pbc', '--push-button-connect',
-        action='store_true',
-        help='Run WPS push button connection'
     )
     parser.add_argument(
         '-d', '--delay',
@@ -128,4 +131,11 @@ def parseArgs():
         help='Verbose output'
     )
     args = parser.parse_args()
+
+    if (args.pixie_force or args.show_pixie_cmd) and not args.pixie_dust:
+        parser.error('argument -F/--pixie-force and -X/--show-pixie-cmd can only be used with -K/--pixie-dust')
+
+    if args.delay and not args.bruteforce:
+        parser.error('argument -d/--delay can only be used with -B/--bruteforce')
+
     return args
