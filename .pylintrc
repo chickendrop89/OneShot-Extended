@@ -17,15 +17,10 @@ load-plugins=pylint.extensions.check_elif,
              pylint.extensions.set_membership,
              pylint.extensions.overlapping_exceptions,
              pylint.extensions.typing,
-             pylint.extensions.comparison_placement,
-             pylint.extensions.mccabe
+             pylint.extensions.comparison_placement
 
 # Pickle collected data for later comparisons.
 persistent=yes
-
-# When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages.
-suggestion-mode=yes
 
 [MESSAGES CONTROL]
 # Disable the message, report, category or checker with the given id(s). You
