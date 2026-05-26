@@ -383,7 +383,7 @@ class Initialize:
         self.CONNECTION_STATUS.clear()
         self.WPAS.stdout.read(300) # Clean the pipe
 
-        timeout_retry_count = 1
+        wps_start_time = time.time()
 
         if not verbose:
             verbose = self.PRINT_DEBUG
@@ -422,9 +422,9 @@ class Initialize:
                 break
 
             if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
-                timeout_retry_count += 1
+                elapsed = int(time.time() - wps_start_time)
 
-                logger.info(f'Retrying after WPS timeout (attempt {timeout_retry_count})…')
+                logger.warning(f'Received WPS-timeout after {elapsed} seconds of first attempt')
 
                 try:
                     self.WPAS.terminate()
