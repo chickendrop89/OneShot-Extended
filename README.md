@@ -27,7 +27,7 @@ Required arguments:
 Optional arguments:
   -b, --bssid BSSID            : BSSID of the target AP
   -p, --pin PIN                : Use the specified pin (arbitrary string or 4/8 digit pin).
-  -np, --null-pin              : Run a Null pin attack (00000000)
+  -N, --null-pin               : Run a Null pin attack (00000000)
   -K, --pixie-dust             : Run Pixie Dust attack
   -F, --pixie-force            : Run Pixiewps with --force option (bruteforce full range)
   -B, --bruteforce             : Run online bruteforce attack

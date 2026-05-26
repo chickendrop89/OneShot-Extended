@@ -39,7 +39,7 @@ def parseArgs():
         help='Use the specified pin (arbitrary string or 4/8 digit pin)'
     )
     parser.add_argument(
-        '-np', '--null-pin',
+        '-N', '--null-pin',
         action='store_true',
         help='Run a Null pin attack (00000000)'
     )
