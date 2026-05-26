@@ -16,6 +16,10 @@
 import os
 import sys
 
+# pylint: disable=wrong-import-position
+if sys.version_info < (3, 10):
+    sys.exit('Python 3.10 or higher is required to run this script.')
+
 from shutil import which
 from pathlib import Path
 from src import logger
@@ -29,9 +33,6 @@ import src.args
 
 def checkRequirements():
     """Verify requirements are met"""
-
-    if sys.version_info < (3, 10):
-        src.utils.die('The program requires Python 3.10 and above')
 
     if os.getuid() != 0:
         src.utils.die('Run it as root')
