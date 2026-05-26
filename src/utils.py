@@ -16,6 +16,8 @@ import os
 import pathlib
 import subprocess
 
+from src import logger
+
 USER_HOME = str(pathlib.Path.home())
 SESSIONS_DIR = f'{USER_HOME}/.OneShot-Extended/sessions/'
 PIXIEWPS_DIR = f'{USER_HOME}/.OneShot-Extended/pixiewps/'
@@ -37,7 +39,7 @@ def ifaceCtl(interface: str, action: str):
             stderr=subprocess.STDOUT
         )
     except (subprocess.CalledProcessError, FileNotFoundError) as error:
-        print (f'[!] Can not control interface with ip link: \n {error}')
+        logger.error(f'Can not control interface with ip link: \n {error}')
 
     command_output_stripped = command_output.stdout.strip()
 
@@ -48,15 +50,15 @@ def ifaceCtl(interface: str, action: str):
             try:
                 subprocess.run(rfkill_command, check=True)
             except (subprocess.CalledProcessError, FileNotFoundError) as error:
-                print(f'[!] Failed to unblock interface, not continuing: \n {error}')
+                logger.error(f'Failed to unblock interface, not continuing: \n {error}')
 
         if 'RF-kill' in command_output_stripped:
-            print('[-] RF-kill is blocking the interface, unblocking')
+            logger.warning('RF-kill is blocking the interface, unblocking')
             _rfKillUnblock()
             return
 
     if command_output.returncode != 0:
-        print(f'[!] {command_output_stripped}')
+        logger.error(command_output_stripped)
 
     return command_output.returncode
 

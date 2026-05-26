@@ -17,6 +17,7 @@ import time
 
 from datetime import datetime
 from typing import Union
+from src import logger
 
 import src.wps.generator
 import src.wps.connection
@@ -47,7 +48,7 @@ class BruteforceStatus:
         else:
             percentage = ((10000 / 11000) + (int(self.MASK[4:]) / 11000)) * 100
 
-        print('[*] {:.2f}% complete @ {} ({:.2f} seconds/pin)'.format(
+        logger.info('{:.2f}% complete @ {} ({:.2f} seconds/pin)'.format(
             percentage, self.START_TIME, average_pin_time
         ))
 
@@ -91,11 +92,11 @@ class Initialize:
             self.CONNECTION.singleConnection(bssid, pin)
 
             if self.CONNECTION_STATUS.isFirstHalfValid():
-                print('[*] First half found')
+                logger.info('First half found')
                 return first_half
 
             if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
-                print('[-] WPS transaction failed, re-trying last pin')
+                logger.warning('WPS transaction failed, re-trying last pin')
                 return self._firstHalfBruteforce(bssid, first_half)
 
             first_half = str(int(first_half) + 1).zfill(4)
@@ -104,7 +105,7 @@ class Initialize:
             if delay:
                 time.sleep(delay)
 
-        print('[-] First half not found')
+        logger.warning('First half not found')
         return False
 
     def _secondHalfBruteforce(self, bssid: str, first_half: str, second_half: str, delay: float = None) -> Union[str, bool]:
@@ -122,7 +123,7 @@ class Initialize:
                 return pin
 
             if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
-                print('[-] WPS transaction failed, re-trying last pin')
+                logger.warning('WPS transaction failed, re-trying last pin')
                 return self._secondHalfBruteforce(bssid, first_half, second_half)
 
             second_half = str(int(second_half) + 1).zfill(3)
@@ -167,11 +168,11 @@ class Initialize:
                 self._secondHalfBruteforce(bssid, first_half, second_half, delay)
             raise KeyboardInterrupt
         except KeyboardInterrupt as e:
-            print('\nAborting…')
+            logger.info('Aborting…')
 
             with open(filename, 'w', encoding='utf-8') as file:
                 file.write(self.BRUTEFORCE_STATUS.MASK)
-            print(f'[*] Session saved in {filename}')
+            logger.info(f'Session saved in {filename}')
 
             if args.loop:
                 raise KeyboardInterrupt from e

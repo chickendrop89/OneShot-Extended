@@ -12,6 +12,7 @@
 #  GNU General Public License for more details.
 
 from typing import Union
+from src import logger
 
 class NetworkAddress:
     """Handles MAC addresses"""
@@ -128,8 +129,8 @@ class WPSpin:
         pins = self._getSuggested(bssid)
 
         if len(pins) > 1:
-            print(f'PINs generated for {bssid}:')
-            print('{:<3} {:<10} {:<}'.format(
+            logger.info(f'PINs generated for {bssid}:')
+            logger.info('{:<3} {:<10} {:<}'.format(
                 '#', 'PIN', 'Name'
             ))
 
@@ -137,7 +138,7 @@ class WPSpin:
                 number = f'{i + 1})'
                 line = '{:<3} {:<10} {:<}'.format(
                     number, pin['pin'], pin['name'])
-                print(line)
+                logger.info(line)
 
             while True:
                 pin_no = input('Select the PIN: ')
@@ -147,13 +148,13 @@ class WPSpin:
                     else:
                         raise ValueError
                 except ValueError:
-                    print('Invalid number')
+                    logger.warning('Invalid number')
                 else:
                     break
 
         elif len(pins) == 1:
             pin = pins[0]
-            print('[*] The only probable PIN is selected:', pin['name'])
+            logger.info('The only probable PIN is selected: ' + pin['name'])
             pin = pin['pin']
         else:
             return None

@@ -17,9 +17,11 @@ import codecs
 import subprocess
 
 from typing import Union
+from src import logger
 from src.utils import REPORTS_DIR
 
 import src.args
+
 args = src.args.parseArgs()
 
 class WiFiScanner:
@@ -58,7 +60,7 @@ class WiFiScanner:
         networks = self._iwScanner()
 
         if not networks:
-            print('[!] No WPS networks found.')
+            logger.error('No WPS networks found.')
             return
 
         while True:
@@ -75,7 +77,7 @@ class WiFiScanner:
 
                 raise IndexError
             except IndexError:
-                print('Invalid number')
+                logger.warning('Invalid number')
 
     def _iwScanner(self) -> Union[dict[int, dict], bool]:
         """Parsing iw scan results."""
@@ -179,13 +181,14 @@ class WiFiScanner:
                 encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT
             )
         except (subprocess.CalledProcessError, FileNotFoundError) as error:
-            return print (f'[!] Failed to perform an iw scan: \n {error}')
+            logger.error(f'Failed to perform an iw scan: \n {error}')
+            return
 
         lines = iw_scan_process.stdout.splitlines()
 
         for line in lines:
             if line.startswith('command failed:'):
-                print('[!] Error:', line)
+                logger.error(f'Error: {line}')
                 return False
 
             line = line.strip('\t')

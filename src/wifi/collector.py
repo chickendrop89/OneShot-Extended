@@ -17,6 +17,7 @@ import csv
 
 from datetime import datetime
 from shutil import which
+from src import logger
 
 import src.wifi.android
 import src.utils
@@ -55,17 +56,17 @@ class WiFiCollector:
                 self.ANDROID_NETWORK.enableWifi(force_enable=True, whisper=True)
                 subprocess.run(android_connect_cmd, check=True)
             except subprocess.CalledProcessError as error:
-                return print(f'[!] Failed to add network to Android network manager: \n {error}')
+                return logger.info(f'[!] Failed to add network to Android network manager: \n {error}')
 
         # Detect NetworkManager
         elif which('nmcli'):
             try:
                 subprocess.run(networkmanager_connect_cmd, check=True)
             except subprocess.CalledProcessError as error:
-                return print(f'[!] Failed to add network to NetworkManager: \n {error}')
+                return logger.info(f'[!] Failed to add network to NetworkManager: \n {error}')
 
 
-        print('[*] Access Point was saved to your network manager')
+        logger.info('[*] Access Point was saved to your network manager')
 
     @staticmethod
     def writeResult(bssid: str, essid: str, wps_pin: str, wpa_psk: str):
@@ -96,7 +97,7 @@ class WiFiCollector:
 
             csv_writer.writerow([date_str, bssid, essid, wps_pin, wpa_psk])
 
-        print(f'[*] Credentials saved to {filename}.txt, {filename}.csv')
+        logger.info(f'[*] Credentials saved to {filename}.txt, {filename}.csv')
 
     @staticmethod
     def writePin(bssid: str, pin: str):
@@ -108,4 +109,4 @@ class WiFiCollector:
         with open(filename, 'w', encoding='utf-8') as file:
             file.write(pin)
 
-        print(f'[*] PIN saved in {filename}')
+        logger.info(f'[*] PIN saved in {filename}')

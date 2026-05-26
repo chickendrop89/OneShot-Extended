@@ -14,6 +14,7 @@
 import subprocess
 
 from typing import Union
+from src import logger
 
 class Data:
     """Stored data used for pixiewps command."""
@@ -36,12 +37,12 @@ class Data:
     def runPixieWps(self, show_command: bool = False, full_range: bool = False) -> Union[str, bool]:
         """Runs the pixiewps and attempts to extract the WPS pin from the output."""
 
-        print('[*] Running Pixiewps…')
+        logger.info('Running Pixiewps…')
         command = self._getPixieCmd(full_range)
 
         if show_command:
             # Convert the command array into a string
-            print(' '.join(command))
+            logger.debug(' '.join(command))
 
         try:
             command_output = subprocess.run(command,
@@ -49,9 +50,10 @@ class Data:
                 encoding='utf-8'
             )
         except (subprocess.CalledProcessError, FileNotFoundError) as error:
-            return print(f'[!] Pixiewps has exited on error: \n {error}')
+            logger.error(f'Pixiewps has exited on error: \n {error}')
+            return False
 
-        print(command_output.stdout)
+        logger.info(command_output.stdout)
 
         if command_output.returncode == 0:
             lines = command_output.stdout.splitlines()

@@ -18,6 +18,7 @@ import sys
 
 from shutil import which
 from pathlib import Path
+from src import logger
 
 import src.wifi.android
 import src.wifi.scanner
@@ -49,9 +50,9 @@ def setupDirectories():
     if os.path.exists(old_dir):
         try:
             os.rename(old_dir, new_dir)
-            print('[*] Renamed legacy data directory')
+            logger.info('Renamed legacy data directory')
         except OSError as e:
-            print(f'[!] Failed to rename data directory: {e}')
+            logger.error(f'Failed to rename data directory: {e}')
 
     for directory in [src.utils.SESSIONS_DIR, src.utils.PIXIEWPS_DIR]:
         if not os.path.exists(directory):
@@ -107,7 +108,7 @@ def handleConnection(args):
                 vuln_list = []
 
             if not args.loop:
-                print('[*] BSSID not specified (--bssid) — scanning for available networks')
+                logger.info('BSSID not specified (--bssid) — scanning for available networks')
 
             args.bssid = scanForNetworks(args.interface, vuln_list)
 
@@ -135,6 +136,7 @@ def main():
     setupDirectories()
 
     args = src.args.parseArgs()
+    logger.initialize_logging(verbose=args.verbose)
 
     while True:
         try:
@@ -163,11 +165,11 @@ def main():
         except KeyboardInterrupt:
             if args.loop:
                 if input('\n[?] Exit the script (otherwise continue to AP scan)? [N/y] ').lower() == 'y':
-                    print('Aborting…')
+                    logger.info('Aborting…')
                     break
                 args.bssid = None
             else:
-                print('\nAborting…')
+                logger.info('Aborting…')
                 break
 
         finally:

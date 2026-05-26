@@ -25,6 +25,8 @@ import src.wps.generator
 import src.utils
 import src.wifi.collector
 
+from src import logger
+
 class ConnectionStatus:
     """Stores WPS connection details and status."""
 
@@ -91,9 +93,9 @@ class Initialize:
     def _credentialPrint(wps_pin: str = None, wpa_psk: str = None, essid: str = None):
         """Prints network credentials after success"""
 
-        print(f'[+] WPS PIN: \'{wps_pin}\'')
-        print(f'[+] WPA PSK: \'{wpa_psk}\'')
-        print(f'[+] AP SSID: \'{essid}\'')
+        logger.success(f'WPS PIN: \'{wps_pin}\'')
+        logger.success(f'WPA PSK: \'{wpa_psk}\'')
+        logger.success(f'AP SSID: \'{essid}\'')
 
     def singleConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, showpixiecmd: bool = False,
                          pixieforce: bool = False, pbc_mode: bool = False, store_pin_on_fail: bool = False, null_pin: bool = False) -> bool:
@@ -135,7 +137,7 @@ class Initialize:
             try:
                 self._wpsConnection(bssid, pin, pixiemode)
             except KeyboardInterrupt:
-                print('\nAborting…')
+                logger.info('Aborting…')
                 collector.writePin(bssid, pin)
                 return False
         else:
@@ -161,19 +163,19 @@ class Initialize:
                 if pin:
                     return self.singleConnection(bssid, pin, pixiemode=False, store_pin_on_fail=True)
                 return False
-            else:
-                print('[!] Not enough data to run Pixie Dust attack')
-                return False
-        else:
-            if store_pin_on_fail:
-                # Saving Pixiewps calculated PIN if can't connect
-                collector.writePin(bssid, pin)
+
+            logger.error('Not enough data to run Pixie Dust attack')
             return False
+
+        if store_pin_on_fail:
+            # Saving Pixiewps calculated PIN if can't connect
+            collector.writePin(bssid, pin)
+        return False
 
     def _initWpaSupplicant(self):
         """Initializes wpa_supplicant with the specified configuration"""
 
-        print('[*] Running wpa_supplicant…')
+        logger.info('Running wpa_supplicant…')
 
         wpa_supplicant_cmd = ['wpa_supplicant']
         wpa_supplicant_cmd.extend([
@@ -189,14 +191,15 @@ class Initialize:
                 encoding='utf-8'
             )
         except (subprocess.CalledProcessError, FileNotFoundError) as error:
-            return print (f'[!] Failed to open wpa_supplicant \n {error}')
+            logger.error(f'Failed to open wpa_supplicant \n {error}')
+            return
 
         # Waiting for wpa_supplicant control interface initialization
         while True:
             ret = self.WPAS.poll()
 
             if ret is not None and ret != 0:
-                print(f'[!] wpa_supplicant returned an error: \n {self.WPAS.communicate()[0]}')
+                logger.error(f'wpa_supplicant returned an error: \n {self.WPAS.communicate()[0]}')
             if os.path.exists(self.WPAS_CTRL_PATH):
                 break
 
@@ -243,25 +246,25 @@ class Initialize:
         """Handle WPS-specific protocol messages"""
 
         if 'M2D' in line:
-            print('[-] Received WPS Message M2D')
+            logger.warning('Received WPS Message M2D')
             src.utils.die('[!] Error: AP is not ready yet, try later')
 
         if 'Building Message M' in line:
             n = int(line.split('Building Message M')[1])
             self.CONNECTION_STATUS.LAST_M_MESSAGE = n
-            print(f'[*] Sending WPS Message M{n}…')
+            logger.info(f'Sending WPS Message M{n}…')
 
         elif 'Received M' in line:
             n = int(line.split('Received M')[1])
             self.CONNECTION_STATUS.LAST_M_MESSAGE = n
-            print(f'[*] Received WPS Message M{n}')
+            logger.info(f'Received WPS Message M{n}')
             if n == 5:
-                print('[*] The first half of the PIN is valid')
+                logger.info('The first half of the PIN is valid')
 
         elif 'Received WSC_NACK' in line:
             self.CONNECTION_STATUS.STATUS = 'WSC_NACK'
-            print('[-] Received WSC NACK')
-            print('[!] Error: wrong PIN code')
+            logger.warning('Received WSC NACK')
+            logger.error('Error: wrong PIN code')
 
         elif 'Enrollee Nonce' in line and 'hexdump' in line:
             self._handle_pixie_data('E_NONCE', line, 16 * 2, pixiemode)
@@ -295,57 +298,57 @@ class Initialize:
 
         if ': State: ' in line and '-> SCANNING' in line:
             self.CONNECTION_STATUS.STATUS = 'scanning'
-            print('[*] Scanning…')
+            logger.info('Scanning…')
 
         elif ('WPS-FAIL' in line) and (self.CONNECTION_STATUS.STATUS != ''):
             self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-            print('[-] wpa_supplicant returned WPS-FAIL')
+            logger.warning('wpa_supplicant returned WPS-FAIL')
 
         elif 'Trying to authenticate with' in line:
             self.CONNECTION_STATUS.STATUS = 'authenticating'
             if 'SSID' in line:
                 self.CONNECTION_STATUS.ESSID = self._decode_essid(line)
-            print('[*] Authenticating…')
+            logger.info('Authenticating…')
 
         elif 'Authentication response' in line:
-            print('[*] Authenticated')
+            logger.info('Authenticated')
 
         elif 'Trying to associate with' in line:
             self.CONNECTION_STATUS.STATUS = 'associating'
             if 'SSID' in line:
                 self.CONNECTION_STATUS.ESSID = self._decode_essid(line)
-            print('[*] Associating with AP…')
+            logger.info('Associating with AP…')
 
         elif ('Associated with' in line) and (self.INTERFACE in line):
             bssid = line.split()[-1].upper()
             if self.CONNECTION_STATUS.ESSID:
-                print(f'[+] Associated with {bssid} (ESSID: {self.CONNECTION_STATUS.ESSID})')
+                logger.success(f'Associated with {bssid} (ESSID: {self.CONNECTION_STATUS.ESSID})')
             else:
-                print(f'[+] Associated with {bssid}')
+                logger.success(f'Associated with {bssid}')
 
         elif 'EAPOL: txStart' in line:
             self.CONNECTION_STATUS.STATUS = 'eapol_start'
-            print('[*] Sending EAPOL Start…')
+            logger.info('Sending EAPOL Start…')
 
         elif 'EAP entering state IDENTITY' in line:
-            print('[*] Received Identity Request')
+            logger.info('Received Identity Request')
 
         elif 'using real identity' in line:
-            print('[*] Sending Identity Response…')
+            logger.info('Sending Identity Response…')
 
         elif 'WPS-TIMEOUT' in line:
-            print('[-] Received WPS-TIMEOUT. Something might be wrong with the interface ⚠')
+            logger.warning('Received WPS-TIMEOUT. Something might be wrong with the interface ⚠')
             self.CONNECTION_STATUS.STATUS = 'WPS_TIMEOUT'
 
         elif 'NL80211_CMD_DEL_STATION' in line:
             self.DISCONNECT_COUNT += 1
             if self.DISCONNECT_COUNT == 5:
-                print('[-] Received NL80211 DEL_STATION too many times. There is interference ⚠')
+                logger.warning('Received NL80211 DEL_STATION too many times. There is interference ⚠')
 
         elif pbc_mode and ('selected BSS ' in line):
             bssid = line.split('selected BSS ')[-1].split()[0].upper()
             self.CONNECTION_STATUS.BSSID = bssid
-            print(f'[*] Selected AP: {bssid}')
+            logger.info(f'Selected AP: {bssid}')
 
         return True
 
@@ -355,7 +358,7 @@ class Initialize:
         setattr(self.PIXIE_CREDS, attr, hex_value)
         assert len(hex_value) == expected_len
         if pixiemode:
-            print(f'[P] {attr}: {hex_value}')
+            logger.debug(f'{attr}: {hex_value}')
 
     def _decode_essid(self, line: str) -> str:
         """Decode ESSID from wpa_supplicant output"""
@@ -379,13 +382,13 @@ class Initialize:
 
         if pbc_mode:
             if bssid:
-                print(f'[*] Starting WPS push button connection to {bssid}…')
+                logger.info(f'Starting WPS push button connection to {bssid}…')
                 cmd = f'WPS_PBC {bssid}'
             else:
-                print('[*] Starting WPS push button connection…')
+                logger.info('Starting WPS push button connection…')
                 cmd = 'WPS_PBC'
         else:
-            print(f'[*] Trying PIN \'{pin}\'…')
+            logger.info(f'Trying PIN \'{pin}\'…')
             cmd = f'WPS_REG {bssid} {pin}'
 
         if bssid:
@@ -395,7 +398,7 @@ class Initialize:
 
         if 'OK' not in r:
             self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-            print(self._explainWpasNotOkStatus(cmd, r))
+            logger.error(self._explainWpasNotOkStatus(cmd, r))
             return False
 
         while True:
@@ -413,7 +416,7 @@ class Initialize:
             if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
                 timeout_retry_count += 1
 
-                print(f'[*] Retrying after WPS timeout (attempt {timeout_retry_count})…')
+                logger.info(f'Retrying after WPS timeout (attempt {timeout_retry_count})…')
 
                 try:
                     self.WPAS.terminate()
@@ -428,7 +431,7 @@ class Initialize:
                 r = self._sendAndReceive(cmd)
                 if 'OK' not in r:
                     self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-                    print(self._explainWpasNotOkStatus(cmd, r))
+                    logger.error(self._explainWpasNotOkStatus(cmd, r))
                     return False
 
                 self.CONNECTION_STATUS.clear()
