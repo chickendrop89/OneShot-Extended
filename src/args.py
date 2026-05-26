@@ -36,7 +36,12 @@ def parseArgs():
     parser.add_argument(
         '-p', '--pin',
         type=str,
-        help='Use the specified pin (arbitrary string or 4/8 digit pin). Enter a blank pin (e.g. \'\') for a Null Pin attack'
+        help='Use the specified pin (arbitrary string or 4/8 digit pin)'
+    )
+    parser.add_argument(
+        '-np', '--null-pin',
+        action='store_true',
+        help='Run a Null pin attack (00000000)'
     )
     parser.add_argument(
         '-K', '--pixie-dust',

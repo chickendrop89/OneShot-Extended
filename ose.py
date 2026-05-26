@@ -124,7 +124,8 @@ def handleConnection(args):
                     args.pin,
                     args.pixie_dust,
                     args.show_pixie_cmd,
-                    args.pixie_force
+                    args.pixie_force,
+                    null_pin=args.null_pin
                 )
 
 def main():
