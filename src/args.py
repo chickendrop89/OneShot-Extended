@@ -18,23 +18,47 @@ def parseArgs():
     """Parse arguments passed to the main python script."""
 
     parser = argparse.ArgumentParser(
-        description='OneShot-Extended (c) 2026 chickendrop89',
-        epilog='Example: %(prog)s -i wlan0 -b 00:90:4C:C1:AC:21 -K'
+        description='''
+▄▖    ▄▖▌   ▗   ▄▖  ▗      ▌   ▌
+▌▌▛▌█▌▚ ▛▌▛▌▜▘▄▖▙▖▚▘▜▘█▌▛▌▛▌█▌▛▌
+▙▌▌▌▙▖▄▌▌▌▙▌▐▖  ▙▖▞▖▐▖▙▖▌▌▙▌▙▖▙▌
+
+Copyright (C) 2026 chickendrop89
+''',
+        formatter_class=argparse.RawTextHelpFormatter,
+        add_help=False
     )
 
-    parser.add_argument(
+    target_group = parser.add_argument_group('Required arguments')
+    target_group.add_argument(
         '-i', '--interface',
         type=str,
         required=True,
         help='Name of the interface to use'
     )
-    parser.add_argument(
+    target_group.add_argument(
         '-b', '--bssid',
         type=str,
         help='BSSID of the target AP'
     )
 
-    attack_pin_group = parser.add_mutually_exclusive_group()
+    attack_group = parser.add_argument_group('Attack Modes')
+    attack_pin_group = attack_group.add_mutually_exclusive_group()
+    attack_pin_group.add_argument(
+        '-p', '--pin',
+        type=str,
+        help='Use the specified pin (arbitrary string or 4/8 digit pin)'
+    )
+    attack_pin_group.add_argument(
+        '-N', '--null-pin',
+        action='store_true',
+        help='Use a null pin'
+    )
+    attack_pin_group.add_argument(
+        '-P', '--pixie-dust',
+        action='store_true',
+        help='Run Pixie Dust attack'
+    )
     attack_pin_group.add_argument(
         '-B', '--bruteforce',
         action='store_true',
@@ -45,111 +69,103 @@ def parseArgs():
         action='store_true',
         help='Run WPS push button connection'
     )
-    attack_pin_group.add_argument(
-        '-p', '--pin',
-        type=str,
-        help='Use the specified pin (arbitrary string or 4/8 digit pin)'
-    )
-    attack_pin_group.add_argument(
-        '-N', '--null-pin',
-        action='store_true',
-        help='Run a Null pin attack (00000000)'
-    )
-    attack_pin_group.add_argument(
-        '-K', '--pixie-dust',
-        action='store_true',
-        help='Run Pixie Dust attack'
-    )
 
-    parser.add_argument(
-        '-F', '--pixie-force',
-        action='store_true',
-        help='Run Pixiewps with --force option (bruteforce full range)'
-    )
-    parser.add_argument(
-        '-X', '--show-pixie-cmd',
-        action='store_true',
-        help='Always print Pixiewps command'
-    )
-    parser.add_argument(
+    opt_group = parser.add_argument_group('Optional arguments')
+    opt_group.add_argument(
         '-k', '--kill',
         action='store_true',
         help='Automatically kill processes interfering with the wireless interface'
     )
-    parser.add_argument(
+    opt_group.add_argument(
         '-r', '--restore',
         action='store_true',
-        help='Restore killed interfering processes on exit (for use with --kill)'
+        help='Restore killed interfering processes on exit (--kill)'
     )
-    parser.add_argument(
-        '-d', '--delay',
-        type=float,
-        help='Set the delay between pin attempts'
-    )
-    parser.add_argument(
-        '-t', '--timeout',
-        type=float,
-        default=60,
-        help='Set the timeout for retrying after WPS lock (default: 60s)'
-    )
-    parser.add_argument(
+    opt_group.add_argument(
         '-w', '--write',
         action='store_true',
         help='Write credentials to the file on success'
     )
-    parser.add_argument(
+    opt_group.add_argument(
         '-s', '--save',
         action='store_true',
         help='Save the AP to network manager on success'
     )
-    parser.add_argument(
-        '--iface-down',
-        action='store_true',
-        help='Down network interface when the work is finished'
-    )
-    parser.add_argument(
-        '--vuln-list',
-        type=str,
-        default=os.path.dirname(__file__) + '/../vulnwsc.txt',
-        help='Use custom file with vulnerable devices list'
-    )
-    parser.add_argument(
+    opt_group.add_argument(
         '-l', '--loop',
         action='store_true',
         help='Run in a loop'
     )
-    parser.add_argument(
+    opt_group.add_argument(
         '-c', '--clear',
         action='store_true',
         help='Clear the screen on every wi-fi scan'
     )
-    parser.add_argument(
+    opt_group.add_argument(
+        '-d', '--delay',
+        type=float,
+        default=0,
+        help='Set a delay between pin attempts in seconds (default: %(default)s)'
+    )
+    opt_group.add_argument(
+        '-t', '--timeout',
+        type=float,
+        default=60,
+        help='Set the timeout for retrying after WPS lock (default: %(default)s)'
+    )
+
+    adv_group = parser.add_argument_group('Advanced Arguments')
+    adv_group.add_argument(
+        '-F', '--pixie-force',
+        action='store_true',
+        help='Run Pixiewps with --force option (bruteforce full range)'
+    )
+    adv_group.add_argument(
+        '-S', '--show-pixie-cmd',
+        action='store_true',
+        help='Always print full pixiewps command'
+    )
+    adv_group.add_argument(
+        '-I', '--iface-down',
+        action='store_true',
+        help='Down network interface when the work is finished'
+    )
+    adv_group.add_argument(
+        '-M', '--mtk-wifi',
+        action='store_true',
+        help='Activate MediaTek Wi-Fi interface driver on startup and deactivate it on exit'
+    )
+    adv_group.add_argument(
+        '-D', '--dont-touch-settings',
+        action='store_true',
+        help="Don't touch the Android Wi-Fi settings on startup and exit"
+    )
+    adv_group.add_argument(
         '--reverse-scan',
         action='store_true',
         help='Reverse order of networks in the list of networks. Useful on small displays'
     )
-    parser.add_argument(
-        '--mtk-wifi',
-        action='store_true',
-        help='Activate MediaTek Wi-Fi interface driver on startup and deactivate it on exit '
-             '(for internal Wi-Fi adapters implemented in MediaTek SoCs). '
-             'Turn off Wi-Fi in the system settings before using this.'
+    adv_group.add_argument(
+        '--vuln-list',
+        type=str,
+        default=os.path.join(os.path.dirname(__file__), '../vulnwsc.txt'),
+        help='Use custom file with vulnerable devices list'
     )
-    parser.add_argument(
-        '--dts', '--dont-touch-settings',
-        action='store_true',
-        help='Don\'t touch the Android Wi-Fi settings on startup and exit. '
-             'Use when having device-specific issues'
-    )
-    parser.add_argument(
+    adv_group.add_argument(
         '-v', '--verbose',
         action='store_true',
         help='Verbose output'
     )
+    adv_group.add_argument(
+        '-h', '--help',
+        action='help',
+        help='Show this help message and exit'
+    )
+
     args = parser.parse_args()
 
     if (args.pixie_force or args.show_pixie_cmd) and not args.pixie_dust:
-        parser.error('argument -F/--pixie-force and -X/--show-pixie-cmd can only be used with -K/--pixie-dust')
+        parser.error('argument -F/--pixie-force and -S/--show-pixie-cmd can only be used with -P/--pixie-dust')
 
     if args.delay and not args.bruteforce:
         parser.error('argument -d/--delay can only be used with -B/--bruteforce')
