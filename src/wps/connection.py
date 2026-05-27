@@ -358,8 +358,9 @@ class Initialize:
     def _handle_pixie_data(self, attr: str, line: str, expected_len: int):
         """Handle pixie dust attack related data"""
         hex_value = self._getHex(line)
+        if len(hex_value) != expected_len:
+            raise ValueError(f'Invalid {attr} length: expected {expected_len}, got {len(hex_value)}')
         setattr(self.PIXIE_CREDS, attr, hex_value)
-        assert len(hex_value) == expected_len
 
         if args.pixie_dust:
             logger.debug(f'{attr}: {hex_value}')
@@ -412,12 +413,6 @@ class Initialize:
 
             if not res or self.CONNECTION_STATUS.STATUS in {'WSC_NACK', 'GOT_PSK', 'WPS_FAIL'}:
                 break
-            if self.CONNECTION_STATUS.STATUS == 'WSC_NACK':
-                break
-            if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
-                break
-            if self.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
-                break
 
             if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
                 elapsed = int(time.time() - wps_start_time)
@@ -444,7 +439,7 @@ class Initialize:
                 continue
 
         self._sendOnly('WPS_CANCEL')
-        return False
+        return self.CONNECTION_STATUS.STATUS == 'GOT_PSK'
 
     def _cleanup(self):
         """Terminates connections and removes temporary files"""

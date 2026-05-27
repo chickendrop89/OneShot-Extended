@@ -70,7 +70,10 @@ class WiFiScanner:
                 if network_no.lower() in {'r', '0', ''}:
                     if args.clear:
                         src.utils.clearScreen()
-                    return self.promptNetwork()
+                    result = self.promptNetwork()
+                    if result is None:
+                        continue
+                    return result
 
                 if int(network_no) in networks.keys():
                     selected_network = networks[int(network_no)]
@@ -128,8 +131,7 @@ class WiFiScanner:
             networks[-1]['Security type'] = sec
 
         def handleWps(_line, result, networks):
-            is_wps_enabled = bool(result.group(1))
-            networks[-1]['WPS'] = is_wps_enabled
+            networks[-1]['WPS'] = True
 
         def handleWpsVersion(_line, result, networks):
             wps_ver = networks[-1]['WPS version']
