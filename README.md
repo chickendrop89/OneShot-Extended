@@ -9,8 +9,9 @@ This is an improved version of the original OneShot
  - Ability to do a WPS Null/blank pin attack
  - Ability to clear the screen every scan
  - Minor changes (e.g, WPA3TM indication, better vulnwsc detection, RF-Kill handling)
- - Works on modern python versions (>3.10)
+ - Improved Scanner reliability (retries, up detection, lock detection)
  - Improved Android support
+ - Works on modern python versions (>3.10)
 
 # Features
  - [Pixie Dust attack](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-Offline-WPS-Attack)
@@ -35,6 +36,7 @@ Optional arguments:
 
 Advanced arguments:
   -d, --delay <n>              : Set the delay between pin attempts
+  -t, --timeout TIMEOUT        : Set the timeout for retrying after WPS lock
   --vuln-list VULN_LIST        : Use custom file with vulnerable devices list
 
   -X, --show-pixie-cmd         : Always print Pixiewps command
@@ -58,12 +60,12 @@ Advanced arguments:
 - **On Termux:**
  ```shell
  pkg install -y root-repo
- pkg install -y git tsu python wpa-supplicant pixiewps iw openssl
+ pkg install -y git tsu python wpa-supplicant pixiewps iw openssl iproute2
  ```
 
 - **On Linux distributions. Install these packages through your package manager:**
  ```shell
- python3 wpa-supplicant iw wget pixiewps
+ python3 wpa-supplicant iw wget pixiewps iproute2
  ```
 
 ## Downloading the repository
