@@ -99,12 +99,7 @@ def handleConnection(args):
     if args.bruteforce:
         connection = src.wps.bruteforce.Initialize(args.interface)
     else:
-        connection = src.wps.connection.Initialize(
-            args.interface,
-            args.write,
-            args.save,
-            args.verbose
-        )
+        connection = src.wps.connection.Initialize(args.interface)
 
     if args.pbc:
         connection.singleConnection(pbc_mode=True)
@@ -125,17 +120,12 @@ def handleConnection(args):
             if args.bruteforce:
                 connection.smartBruteforce(
                     args.bssid,
-                    args.pin,
-                    args.delay
+                    args.pin
                 )
             else:
                 connection.singleConnection(
                     args.bssid,
-                    args.pin,
-                    args.pixie_dust,
-                    args.show_pixie_cmd,
-                    args.pixie_force,
-                    null_pin=args.null_pin
+                    args.pin
                 )
 
 def main():

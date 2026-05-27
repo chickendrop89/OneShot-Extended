@@ -81,7 +81,7 @@ class Initialize:
             interface
         )
 
-    def _firstHalfBruteforce(self, bssid: str, first_half: str, delay: float = None) -> str | bool:
+    def _firstHalfBruteforce(self, bssid: str, first_half: str) -> str | bool:
         """Attempts to bruteforce the first half of a WPS PIN"""
 
         checksum = self.GENERATOR.checksum
@@ -103,18 +103,18 @@ class Initialize:
 
             if self.CONNECTION.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
                 logger.warning('WPS transaction failed, re-trying last pin')
-                return self._firstHalfBruteforce(bssid, first_half, delay)
+                return self._firstHalfBruteforce(bssid, first_half)
 
             first_half = str(int(first_half) + 1).zfill(4)
             self.BRUTEFORCE_STATUS.registerAttempt(first_half)
 
-            if delay:
-                time.sleep(delay)
+            if args.delay:
+                time.sleep(args.delay)
 
         logger.warning('First half not found')
         return False
 
-    def _secondHalfBruteforce(self, bssid: str, first_half: str, second_half: str, delay: float = None) -> str | bool:
+    def _secondHalfBruteforce(self, bssid: str, first_half: str, second_half: str) -> str | bool:
         """Attempts to bruteforce the second half of a WPS PIN"""
 
         checksum = self.GENERATOR.checksum
@@ -135,22 +135,20 @@ class Initialize:
 
             if self.CONNECTION.CONNECTION_STATUS.STATUS == 'WPS_FAIL':
                 logger.warning('WPS transaction failed, re-trying last pin')
-                return self._secondHalfBruteforce(bssid, first_half, second_half, delay)
+                return self._secondHalfBruteforce(bssid, first_half, second_half)
 
             second_half = str(int(second_half) + 1).zfill(3)
             self.BRUTEFORCE_STATUS.registerAttempt(first_half + second_half)
 
-            if delay:
-                time.sleep(delay)
+            if args.delay:
+                time.sleep(args.delay)
 
         return False
 
-    def smartBruteforce(self, bssid: str, start_pin: str = None, delay: float = None):
+    def smartBruteforce(self, bssid: str, start_pin: str = None):
         """Attempts to bruteforce a WPS PIN."""
 
         sessions_dir = src.utils.SESSIONS_DIR
-        args = src.args.parseArgs()
-
         filename = f'''{sessions_dir}{bssid.replace(':', '').upper()}.run'''
 
         if (not start_pin) or (len(start_pin) < 4):
@@ -170,13 +168,13 @@ class Initialize:
 
         try:
             if len(mask) == 4:
-                first_half = self._firstHalfBruteforce(bssid, mask, delay)
+                first_half = self._firstHalfBruteforce(bssid, mask)
                 if first_half and (self.CONNECTION_STATUS.STATUS != 'GOT_PSK'):
-                    self._secondHalfBruteforce(bssid, first_half, '001', delay)
+                    self._secondHalfBruteforce(bssid, first_half, '001')
             elif len(mask) == 7:
                 first_half = mask[:4]
                 second_half = mask[4:]
-                self._secondHalfBruteforce(bssid, first_half, second_half, delay)
+                self._secondHalfBruteforce(bssid, first_half, second_half)
             raise KeyboardInterrupt
         except KeyboardInterrupt as e:
             logger.info('Aborting…')

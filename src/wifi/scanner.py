@@ -185,6 +185,9 @@ class WiFiScanner:
 
         lines = iw_scan_process.stdout.splitlines()
 
+        if args.verbose:
+            print(lines)
+
         for line in lines:
             if line.startswith('command failed:'):
                 logger.error(f'Error: {line}')

