@@ -16,6 +16,7 @@ import os
 import pathlib
 import subprocess
 
+from shutil import which
 from src import logger
 
 USER_HOME = str(pathlib.Path.home())
@@ -46,6 +47,10 @@ def ifaceCtl(interface: str, action: str):
     if isAndroid() is False:
         def _rfKillUnblock():
             rfkill_command = ['rfkill', 'unblock', 'wifi']
+
+            if not which(rfkill_command[0]):
+                logger.warning('rfkill utility is not available, unable to do anything')
+                return
 
             try:
                 subprocess.run(rfkill_command, check=True)
