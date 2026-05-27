@@ -37,8 +37,7 @@ def checkRequirements():
     required_binaries = [
         'pixiewps',
         'wpa_supplicant',
-        'iw', 'ip',
-        'rfkill'
+        'iw', 'ip'
     ]
     missing = [b for b in required_binaries if not which(b)]
 
