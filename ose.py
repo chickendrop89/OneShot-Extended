@@ -136,6 +136,11 @@ def main():
     args = src.args.parseArgs()
     logger.initialize_logging(verbose=args.verbose)
 
+    src.utils.checkRunningProcesses(args.interface)
+
+    if args.kill:
+        src.utils.killInterfering()
+
     while True:
         try:
             android_network = src.wifi.android.AndroidNetwork()
@@ -179,6 +184,9 @@ def main():
 
     if args.mtk_wifi:
         wmt_wifi_device.write_text('0', encoding='utf-8')
+
+    if args.restore:
+        src.utils.restoreProcesses()
 
 if __name__ == '__main__':
     main()

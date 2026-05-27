@@ -72,6 +72,16 @@ def parseArgs():
         help='Always print Pixiewps command'
     )
     parser.add_argument(
+        '-k', '--kill',
+        action='store_true',
+        help='Automatically kill processes interfering with the wireless interface'
+    )
+    parser.add_argument(
+        '-r', '--restore',
+        action='store_true',
+        help='Restore killed interfering processes on exit (for use with --kill)'
+    )
+    parser.add_argument(
         '-d', '--delay',
         type=float,
         help='Set the delay between pin attempts'
@@ -114,7 +124,7 @@ def parseArgs():
         help='Clear the screen on every wi-fi scan'
     )
     parser.add_argument(
-        '-r', '--reverse-scan',
+        '--reverse-scan',
         action='store_true',
         help='Reverse order of networks in the list of networks. Useful on small displays'
     )
@@ -143,5 +153,8 @@ def parseArgs():
 
     if args.delay and not args.bruteforce:
         parser.error('argument -d/--delay can only be used with -B/--bruteforce')
+
+    if args.restore and not args.kill:
+        parser.error('argument -r/--restore can only be used with -k/--kill')
 
     return args

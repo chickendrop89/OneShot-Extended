@@ -13,8 +13,10 @@
 
 import sys
 import os
+import json
 import pathlib
 import subprocess
+import time
 
 from shutil import which
 from src import logger
@@ -23,6 +25,125 @@ USER_HOME = str(pathlib.Path.home())
 SESSIONS_DIR = f'{USER_HOME}/.OneShot-Extended/sessions/'
 PIXIEWPS_DIR = f'{USER_HOME}/.OneShot-Extended/pixiewps/'
 REPORTS_DIR  = f'{os.getcwd()}/reports/'
+
+def _getInterferingProcesses():
+    """Get a list of processes actively using the generic netlink subsystem."""
+
+    try:
+        with open('/proc/net/netlink', 'r', encoding='utf-8') as f:
+            next(f)
+
+            tokens = (line.split() for line in f)
+            pids = {int(p[2]) for p in tokens if len(p) > 2 and p[1] == '16'}
+
+            pids.discard(os.getpid())
+    except IOError:
+        return []
+
+    interfering_pids = []
+    for pid in pids:
+        try:
+            fd_entries = os.scandir(f'/proc/{pid}/fd')
+            has_socket = any('socket' in os.readlink(e.path) for e in fd_entries)
+
+            if has_socket:
+                with open(f'/proc/{pid}/comm', 'r', encoding='utf-8') as f_comm:
+                    pname = f_comm.read().strip()
+
+                    interfering_pids.append((pid, pname))
+        except OSError:
+            continue
+
+    return interfering_pids
+
+def _saveKilledProcesses(processes: list[tuple[int, str, str]]):
+    """Save killed process information to a file for restoration."""
+
+    if not processes:
+        return
+
+    try:
+        killed_file = os.path.join(SESSIONS_DIR, 'killed_processes.json')
+
+        with open(killed_file, 'w', encoding='utf-8') as f:
+            json.dump(processes, f, indent=2)
+    except IOError as e:
+        logger.error(f"Failed to save killed processes: {e}")
+
+def _getProcessCommand(pid: int) -> str:
+    """Get the command line of a process from /proc."""
+
+    try:
+        with open(f'/proc/{pid}/cmdline', 'r', encoding='utf-8') as f:
+            cmdline = f.read().replace('\0', ' ').strip()
+
+            return cmdline
+    except OSError:
+        return ''
+
+def checkRunningProcesses(interface: str):
+    """Detect and warn about other processes actively using the generic netlink subsystem."""
+
+    interfering_pids = _getInterferingProcesses()
+
+    if interfering_pids:
+        processes_str = ', '.join([f"{pname} (PID {pid})" for pid, pname in interfering_pids])
+        logger.warning(f"Another process is using the {interface} interface: {processes_str}")
+
+def killInterfering():
+    """Kill all processes actively using the generic netlink subsystem."""
+
+    interfering_pids = _getInterferingProcesses()
+    killed_processes = []
+
+    if interfering_pids:
+        for pid, pname in interfering_pids:
+            try:
+                cmdline = _getProcessCommand(pid)
+                os.kill(pid, 15)
+                logger.warning(f"Terminated process {pname} (PID {pid})")
+                killed_processes.append((pid, pname, cmdline))
+
+                # Give time to release locks
+                time.sleep(1.5)
+            except OSError as e:
+                logger.error(f"Failed to terminate {pname} (PID {pid}): {e}")
+
+        _saveKilledProcesses(killed_processes)
+
+def restoreProcesses():
+    """Restore processes that were previously killed."""
+
+    killed_file = os.path.join(SESSIONS_DIR, 'killed_processes.json')
+
+    if not os.path.exists(killed_file):
+        return
+
+    try:
+        with open(killed_file, 'r', encoding='utf-8') as f:
+            killed_processes = json.load(f)
+    except (IOError, json.JSONDecodeError) as e:
+        logger.error(f"Failed to read killed processes file: {e}")
+        return
+
+    for pid, pname, cmdline in killed_processes:
+        if not cmdline:
+            logger.warning(f"Cannot restore {pname} (PID {pid}): command line not available")
+            continue
+
+        try:
+            subprocess.Popen(cmdline,
+                shell=True, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            logger.info(f"Restored process {pname}")
+        except (OSError, subprocess.CalledProcessError) as e:
+            logger.error(f"Failed to restore {pname}: {e}")
+
+    try:
+        os.remove(killed_file)
+    except OSError:
+        pass
 
 def isAndroid():
     """Check if this project is ran on android."""
