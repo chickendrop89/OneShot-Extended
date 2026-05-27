@@ -18,7 +18,7 @@ class ColorFormatter(logging.Formatter):
     """Custom formatter that adds colored log level prefixes"""
 
     COLORS = {
-        '[*]': '\033[1;34m',  # Bold Blue
+        '[*]': '\033[0;32m',  # Dark Green
         '[+]': '\033[1;32m',  # Bold Green
         '[-]': '\033[1;33m',  # Bold Yellow
         '[!]': '\033[1;31m',  # Bold Red
