@@ -132,6 +132,9 @@ def handleConnection(args):
                     args.pin
                 )
 
+                if args.pin and connection.CONNECTION_STATUS.IS_LOCKED:
+                    logger.warning(f'{args.bssid} is WPS LOCKED')
+
             # Save to vulnerable list
             if success and args.pixie_dust and network_info:
                 src.utils.addVulnerableAP(network_info, args.vuln_list)
