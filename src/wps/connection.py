@@ -340,7 +340,6 @@ class Initialize:
             logger.info('Sending Identity Response…')
 
         elif 'WPS-TIMEOUT' in line:
-            logger.warning('Received WPS-TIMEOUT. Something might be wrong with the interface ⚠')
             self.CONNECTION_STATUS.STATUS = 'WPS_TIMEOUT'
 
         elif 'NL80211_CMD_DEL_STATION' in line:
