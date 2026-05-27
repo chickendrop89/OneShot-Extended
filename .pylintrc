@@ -36,7 +36,12 @@ disable=missing-module-docstring,
         unnecessary-dunder-call,
         subprocess-run-check,
         consider-using-f-string,
-        line-too-long
+        line-too-long,
+        too-many-branches,
+        too-many-statements,
+        too-many-instance-attributes,
+        too-few-public-methods,
+        too-many-locals
 
 [BASIC]
 
