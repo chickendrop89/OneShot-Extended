@@ -20,6 +20,7 @@ from src import logger
 from src.utils import REPORTS_DIR
 
 import src.args
+import src.utils
 
 args = src.args.parseArgs()
 
@@ -53,7 +54,7 @@ class WiFiScanner:
         except FileNotFoundError:
             self.STORED = []
 
-    def promptNetwork(self) -> str:
+    def promptNetwork(self) -> tuple[str, dict] | None:
         """Prompts the user to select a network from the available WPS networks."""
 
         networks = self._iwScanner()
@@ -72,7 +73,8 @@ class WiFiScanner:
                     return self.promptNetwork()
 
                 if int(network_no) in networks.keys():
-                    return networks[int(network_no)]['BSSID']
+                    selected_network = networks[int(network_no)]
+                    return (selected_network['BSSID'], selected_network)
 
                 raise IndexError
             except IndexError:

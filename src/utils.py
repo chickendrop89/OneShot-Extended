@@ -145,11 +145,6 @@ def restoreProcesses():
     except OSError:
         pass
 
-def isAndroid():
-    """Check if this project is ran on android."""
-
-    return bool(hasattr(sys, 'getandroidapilevel'))
-
 def ifaceCtl(interface: str, action: str):
     """Put an interface up or down."""
 
@@ -208,6 +203,51 @@ def isInterfaceUp(interface: str) -> bool:
 
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return False
+
+def addVulnerableAP(network_info: dict, vuln_list_file: str):
+    """Add vulnerable device model/name to the vulnerable APs list."""
+
+    if not network_info:
+        return
+
+    model = network_info.get('Model', '').strip()
+    model_number = network_info.get('Model number', '').strip()
+    device_name = network_info.get('Device name', '').strip()
+
+    vuln_entry = None
+
+    if model:
+        vuln_entry = f'{model} {model_number}'.strip() if model_number else model
+    elif device_name:
+        vuln_entry = device_name
+
+    if not vuln_entry:
+        logger.warning('No model or device name information available to save')
+        return
+
+    try:
+        # Check if entry already exists in the list
+        try:
+            with open(vuln_list_file, 'r', encoding='utf-8') as f:
+                existing_entries = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            existing_entries = []
+
+        if vuln_entry in existing_entries:
+            logger.info(f'Device {vuln_entry} is already in the vulnerable list')
+            return
+
+        # Append entry to the vulnerable list
+        with open(vuln_list_file, 'a', encoding='utf-8') as f:
+            f.write(f'{vuln_entry}\n')
+            logger.info(f'Added {vuln_entry} to vulnerable list')
+    except IOError as e:
+        logger.error(f'Failed to save to vulnerable list: {e}')
+
+def isAndroid():
+    """Check if this project is ran on android."""
+
+    return bool(hasattr(sys, 'getandroidapilevel'))
 
 def clearScreen():
     """Clear the terminal screen."""

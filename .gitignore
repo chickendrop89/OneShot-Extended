@@ -1,3 +1,6 @@
 __pycache__/
 .vscode/
 reports/
+
+*.txt
+*.list

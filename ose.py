@@ -95,6 +95,9 @@ def scanForNetworks(interface: str, vuln_list: list[str]) -> str:
 def handleConnection(args):
     """Main connection logic"""
 
+    network_info = {}
+    success = False
+
     if args.bruteforce:
         connection = src.wps.bruteforce.Initialize(args.interface)
     else:
@@ -113,7 +116,9 @@ def handleConnection(args):
             if not args.loop:
                 logger.info('BSSID not specified (--bssid) — scanning for available networks')
 
-            args.bssid = scanForNetworks(args.interface, vuln_list)
+            args.bssid, network_info = scanForNetworks(
+                args.interface, vuln_list
+            )
 
         if args.bssid:
             if args.bruteforce:
@@ -122,10 +127,14 @@ def handleConnection(args):
                     args.pin
                 )
             else:
-                connection.singleConnection(
+                success = connection.singleConnection(
                     args.bssid,
                     args.pin
                 )
+
+            # Save to vulnerable list
+            if success and args.pixie_dust and network_info:
+                src.utils.addVulnerableAP(network_info, args.vuln_list)
 
 def main():
     """Main os-e code"""
