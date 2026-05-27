@@ -62,6 +62,27 @@ def ifaceCtl(interface: str, action: str):
 
     return command_output.returncode
 
+def isInterfaceUp(interface: str) -> bool:
+    """Check if the network interface is still up."""
+
+    try:
+        command = ['ip', 'link', 'show', interface]
+        output = subprocess.run(command,
+            encoding='utf-8', stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, timeout=5
+        )
+
+        if output.returncode != 0:
+            return False
+
+        if 'UP' in output.stdout:
+            return True
+
+        return False
+
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return False
+
 def clearScreen():
     """Clear the terminal screen."""
 

@@ -87,6 +87,10 @@ class Initialize:
         checksum = self.GENERATOR.checksum
 
         while int(first_half) < 10000:
+            if not src.utils.isInterfaceUp(self.CONNECTION.INTERFACE):
+                logger.error(f'Interface {self.CONNECTION.INTERFACE} is no longer UP. Aborting bruteforce.')
+                return False
+
             t = int(first_half + '000')
             pin = f'{first_half}000{checksum(t)}'
 
@@ -120,6 +124,10 @@ class Initialize:
         checksum = self.GENERATOR.checksum
 
         while int(second_half) < 1000:
+            if not src.utils.isInterfaceUp(self.CONNECTION.INTERFACE):
+                logger.error(f'Interface {self.CONNECTION.INTERFACE} is no longer UP. Aborting bruteforce.')
+                return False
+
             t = int(first_half + second_half)
             pin = f'{first_half}{second_half}{checksum(t)}'
 

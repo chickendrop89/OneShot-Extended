@@ -404,6 +404,11 @@ class Initialize:
             return False
 
         while True:
+            if not src.utils.isInterfaceUp(self.INTERFACE):
+                logger.error(f'Interface {self.INTERFACE} is no longer UP. Aborting connection attempt.')
+                self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
+                break
+
             res = self._handleWpas(pbc_mode=pbc_mode)
 
             if not res or self.CONNECTION_STATUS.STATUS in {'WSC_NACK', 'GOT_PSK', 'WPS_FAIL'}:
