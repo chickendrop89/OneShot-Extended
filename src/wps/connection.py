@@ -17,7 +17,6 @@ import os
 import subprocess
 import time
 import shutil
-import sys
 import codecs
 
 import src.wps.pixiewps
@@ -407,7 +406,7 @@ class Initialize:
         while True:
             res = self._handleWpas(pbc_mode=pbc_mode)
 
-            if not res or self.CONNECTION_STATUS.STATUS in ('WSC_NACK', 'GOT_PSK', 'WPS_FAIL'):
+            if not res or self.CONNECTION_STATUS.STATUS in {'WSC_NACK', 'GOT_PSK', 'WPS_FAIL'}:
                 break
             if self.CONNECTION_STATUS.STATUS == 'WSC_NACK':
                 break
@@ -448,15 +447,21 @@ class Initialize:
 
         try:
             self.RETSOCK.close()
-            self.WPAS.terminate()
-        except ImportError:
-            # Ignore errors during interpreter shutdown
-            # Exception: sys.meta_path is None, Python is likely shutting down
+            if hasattr(self, 'WPAS'):
+                self.WPAS.terminate()
+                if self.WPAS.stdout:
+                    self.WPAS.stdout.close()
+                self.WPAS.wait()
+        except OSError:
             pass
 
-        os.remove(self.RES_SOCKET_FILE)
+        if os.path.exists(self.RES_SOCKET_FILE):
+            os.remove(self.RES_SOCKET_FILE)
+
         shutil.rmtree(self.TEMPDIR, ignore_errors=True)
-        os.remove(self.TEMPCONF)
+
+        if os.path.exists(self.TEMPCONF):
+            os.remove(self.TEMPCONF)
 
     def __del__(self):
         self._cleanup()
