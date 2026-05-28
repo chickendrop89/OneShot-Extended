@@ -80,7 +80,7 @@ class WiFiScanner:
                     return (selected_network['BSSID'], selected_network)
 
                 raise IndexError
-            except IndexError:
+            except (IndexError, ValueError):
                 logger.warning('Invalid number')
 
     def _iwScanner(self) -> dict[int, dict] | bool:
