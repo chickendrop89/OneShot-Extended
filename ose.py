@@ -86,8 +86,8 @@ def setupMediatekWifi(wmt_wifi_device: Path):
     wmt_wifi_device.write_text('1', encoding='utf-8')
 
 
-def scanForNetworks(interface: str, vuln_list: list[str]) -> str:
-    """Scan, and prompt user to select network. Returns BSSID"""
+def scanForNetworks(interface: str, vuln_list: list[str]) -> tuple[str, dict] | None:
+    """Scan, and prompt user to select network"""
 
     scanner = src.wifi.scanner.WiFiScanner(interface, vuln_list)
     return scanner.promptNetwork()
@@ -116,9 +116,11 @@ def handleConnection(args):
             if not args.loop:
                 logger.info('BSSID not specified (--bssid) — scanning for available networks')
 
-            args.bssid, network_info = scanForNetworks(
-                args.interface, vuln_list
-            )
+            result = scanForNetworks(args.interface, vuln_list)
+            if result is None:
+                return
+
+            args.bssid, network_info = result
 
         if args.bssid:
             if args.bruteforce:
