@@ -140,7 +140,14 @@ class Initialize:
                 collector.writePin(bssid, pin)
                 return False
         else:
-            self._wpsConnection(bssid, pin)
+            while True:
+                self._wpsConnection(bssid, pin)
+
+                if self.CONNECTION_STATUS.IS_LOCKED:
+                    logger.warning(f'{bssid} is WPS LOCKED. Retrying in {args.timeout}s…')
+                    time.sleep(args.timeout)
+                    continue
+                break
 
         if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
             self._credentialPrint(pin, self.CONNECTION_STATUS.WPA_PSK, self.CONNECTION_STATUS.ESSID)
