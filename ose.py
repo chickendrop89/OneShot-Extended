@@ -188,14 +188,14 @@ def main():
             if src.utils.isAndroid() is True and not args.dont_touch_settings and not args.mtk_wifi:
                 setupAndroidWifi(android_network, enable=True)
 
-    if args.iface_down:
-        src.utils.ifaceCtl(args.interface, action='down')
+            if args.iface_down:
+                src.utils.ifaceCtl(args.interface, action='down')
 
-    if args.mtk_wifi:
-        wmt_wifi_device.write_text('0', encoding='utf-8')
+            if args.mtk_wifi:
+                wmt_wifi_device.write_text('0', encoding='utf-8')
 
-    if args.restore:
-        src.utils.restoreProcesses()
+            if args.restore:
+                src.utils.restoreProcesses()
 
 if __name__ == '__main__':
     main()
