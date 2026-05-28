@@ -160,7 +160,7 @@ def main():
             if args.clear:
                 src.utils.clearScreen()
 
-            if src.utils.isAndroid() is True and not args.dts and not args.mtk_wifi:
+            if src.utils.isAndroid() is True and not args.dont_touch_settings and not args.mtk_wifi:
                 setupAndroidWifi(android_network)
 
             if args.mtk_wifi:
@@ -188,7 +188,7 @@ def main():
                 break
 
         finally:
-            if src.utils.isAndroid() is True and not args.dts and not args.mtk_wifi:
+            if src.utils.isAndroid() is True and not args.dont_touch_settings and not args.mtk_wifi:
                 setupAndroidWifi(android_network, enable=True)
 
     if args.iface_down:
