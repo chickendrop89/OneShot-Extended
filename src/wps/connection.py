@@ -143,7 +143,7 @@ class Initialize:
             while True:
                 self._wpsConnection(bssid, pin)
 
-                if self.CONNECTION_STATUS.IS_LOCKED:
+                if self.CONNECTION_STATUS.IS_LOCKED and not args.pixie_dust:
                     logger.warning(f'{bssid} is WPS LOCKED. Retrying in {args.timeout}s…')
                     time.sleep(args.timeout)
                     continue
