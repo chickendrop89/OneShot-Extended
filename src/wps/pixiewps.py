@@ -41,7 +41,7 @@ class Data:
 
         if show_command:
             # Convert the command array into a string
-            logger.debug(' '.join(command))
+            logger.info(' '.join(command))
 
         try:
             command_output = subprocess.run(command,
