@@ -251,9 +251,12 @@ class Initialize:
 
         if 'M2D' in line:
             logger.warning('Received WPS Message M2D')
+
             self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
             self.CONNECTION_STATUS.IS_LOCKED = True
-            src.utils.die('[!] Error: AP is not ready yet, try later')
+
+            logger.error('This AP is not accepting PINs right now without configuration')
+            return False
 
         if 'Building Message M' in line:
             n = int(line.split('Building Message M')[1])
@@ -273,6 +276,7 @@ class Initialize:
 
             if self.CONNECTION_STATUS.LAST_M_MESSAGE < 3:
                 self.CONNECTION_STATUS.IS_LOCKED = True
+                return False
 
             logger.error('Error: wrong PIN code')
 
