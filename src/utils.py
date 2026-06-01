@@ -50,6 +50,10 @@ def _getInterferingProcesses():
                 with open(f'/proc/{pid}/comm', 'r', encoding='utf-8') as f_comm:
                     pname = f_comm.read().strip()
 
+                    # Killing system_server results in soft reboot
+                    if pname == 'system_server':
+                        continue
+
                     interfering_pids.append((pid, pname))
         except OSError:
             continue
