@@ -108,13 +108,14 @@ Advanced Arguments:
 `Device or resource busy (-16)`
 - This happens because some other process is using the interface. 
 - Turn off Wi-Fi scanners/managers or use `--kill` argument to stop them.
+   - on Android, the Wi-Fi scanner is automatically disabled, and the use of `--kill` argument is not recommended
 
 `The wireless interface disappears when Wi-Fi is disabled on Android devices with MediaTek SoC`
 - Try running Oneshot-Extended with the `--mtk-wifi` flag to initialize Wi-Fi device driver.
 
 ## Credits
-* `kimocoder, drygdryg` for the foundation of this project
-* `rofl0r` for original oneshot
+* [kimocoder](https://github.com/kimocoder/OneShot), [drygdryg](https://github.com/drygdryg) for the foundation of this project
+* [rofl0r](https://github.com/rofl0r/oneshot) for original oneshot
 
 ## Warning
 - This tool is intended for educational and authorized penetration testing purposes only.
