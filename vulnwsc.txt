@@ -426,7 +426,6 @@ WPS Router RT-N12+
 WPS Router RT-N14U
 WPS Router RT-N56U
 WPS Router RT-N56UB1
-WPS Router RT-N65U
 WPS Router RT-N300
 WR5570 2011-05-13
 XC220-G3v 1.0
@@ -490,7 +489,6 @@ Huawei HG532e
 Huawei HG532s
 Huawei HG566a
 Intellinet Wireless 300N 3G
-Linksys	E1000
 Linksys	E1700
 Linksys	E2500
 Linksys	EA6350
@@ -609,25 +607,6 @@ TP-Link TL-WR850N 1.0
 TP-Link TL-WR850N 2.0
 TP-Link TL-WR850N 3.0
 TP-Link TL-WR1042N EV-2010-09-20
-D-Link N Router GO-RT-N150
-D-Link Router DIR-605L
-D-Link Router DIR-615H1
-D-Link Router DIR-655
-D-Link Router DIR-809
-Netgear AP EV-2012-08-04
-NETGEAR Wireless Access Point R6220
-NETGEAR Wireless Access Point R6260
-ZyXEL NBG-416N AP Router
-ZyXEL NBG-418N AP Router
-ZyXEL NBG-418N AP Router NBG-418N
-ZyXEL Wireless AP Router NBG-417N
-Huawei Wireless Access Point RT2860
-Linksys Wireless Access Point EA7500
-Linksys Wireless Router WRT110
-Belkin AP EV-2012-09-01
-Trendnet router TEW-625br
-Trendnet router TEW-651br
-Sitecom Wireless Router 300N X2 300N
 Modem/Router EV-2010-09-20
 RB06 RT2860
 RB03 RT2860
