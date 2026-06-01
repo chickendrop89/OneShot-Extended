@@ -428,7 +428,7 @@ class Initialize:
             if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
                 elapsed = int(time.time() - wps_start_time)
 
-                logger.warning(f'Received WPS-timeout after {elapsed} seconds of first attempt')
+                logger.warning(f'Received WPS-timeout after {elapsed} seconds')
 
                 try:
                     self.WPAS.terminate()
