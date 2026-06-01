@@ -134,20 +134,13 @@ class Initialize:
             pin = '<PBC mode>'
         elif store_pin_on_fail:
             try:
-                self._wpsConnection(bssid, pin)
+                self._wpsConnection(bssid, pin, retry_on_lock=True)
             except KeyboardInterrupt:
                 logger.info('Aborting…')
                 collector.writePin(bssid, pin)
                 return False
         else:
-            while True:
-                self._wpsConnection(bssid, pin)
-
-                if self.CONNECTION_STATUS.IS_LOCKED and not args.pixie_dust:
-                    logger.warning(f'{bssid} is WPS LOCKED. Retrying in {args.timeout}s…')
-                    time.sleep(args.timeout)
-                    continue
-                break
+            self._wpsConnection(bssid, pin, retry_on_lock=True)
 
         if self.CONNECTION_STATUS.STATUS == 'GOT_PSK':
             self._credentialPrint(pin, self.CONNECTION_STATUS.WPA_PSK, self.CONNECTION_STATUS.ESSID)
@@ -384,73 +377,80 @@ class Initialize:
         ).encode('latin1').decode('utf-8', errors='replace')
 
     def _wpsConnection(self, bssid: str = None, pin: str = None,
-                       pbc_mode: bool = False) -> bool:
+        pbc_mode: bool = False, retry_on_lock: bool = False) -> bool:
         """Handles WPS connection process"""
 
-        self.PIXIE_CREDS.clear()
-        self.CONNECTION_STATUS.clear()
-        self.WPAS.stdout.read(300) # Clean the pipe
-
-        wps_start_time = time.time()
-
-        if pbc_mode:
-            if bssid:
-                logger.info(f'Starting WPS push button connection to {bssid}…')
-                cmd = f'WPS_PBC {bssid}'
-            else:
-                logger.info('Starting WPS push button connection…')
-                cmd = 'WPS_PBC'
-        else:
-            logger.info(f'Trying PIN \'{pin}\'…')
-            cmd = f'WPS_REG {bssid} {pin}'
-
-        if bssid:
-            self.PIXIE_CREDS.BSSID = bssid.upper()
-
-        r = self._sendAndReceive(cmd)
-
-        if 'OK' not in r:
-            self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-            logger.error(self._explainWpasNotOkStatus(cmd, r))
-            return False
-
         while True:
-            if not src.utils.isInterfaceUp(self.INTERFACE):
-                logger.error(f'Interface {self.INTERFACE} is no longer UP. Aborting connection attempt.')
+            self.PIXIE_CREDS.clear()
+            self.CONNECTION_STATUS.clear()
+            self.WPAS.stdout.read(300) # Clean the pipe
+
+            wps_start_time = time.time()
+
+            if pbc_mode:
+                if bssid:
+                    logger.info(f'Starting WPS push button connection to {bssid}…')
+                    cmd = f'WPS_PBC {bssid}'
+                else:
+                    logger.info('Starting WPS push button connection…')
+                    cmd = 'WPS_PBC'
+            else:
+                logger.info(f'Trying PIN \'{pin}\'…')
+                cmd = f'WPS_REG {bssid} {pin}'
+
+            if bssid:
+                self.PIXIE_CREDS.BSSID = bssid.upper()
+
+            r = self._sendAndReceive(cmd)
+
+            if 'OK' not in r:
                 self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-                break
+                logger.error(self._explainWpasNotOkStatus(cmd, r))
+                return False
 
-            res = self._handleWpas(pbc_mode=pbc_mode)
-
-            if not res or self.CONNECTION_STATUS.STATUS in {'WSC_NACK', 'GOT_PSK', 'WPS_FAIL'}:
-                break
-
-            if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
-                elapsed = int(time.time() - wps_start_time)
-
-                logger.warning(f'Received WPS-timeout after {elapsed} seconds')
-
-                try:
-                    self.WPAS.terminate()
-                    self.WPAS.wait(timeout=2)
-                except subprocess.TimeoutExpired:
-                    self.WPAS.kill()
-
-                self._initWpaSupplicant()
-                time.sleep(1) # Brief delay before retry
-
-                # Resend the WPS command
-                r = self._sendAndReceive(cmd)
-                if 'OK' not in r:
+            while True:
+                if not src.utils.isInterfaceUp(self.INTERFACE):
+                    logger.error(f'Interface {self.INTERFACE} is no longer UP. Aborting connection attempt.')
                     self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
-                    logger.error(self._explainWpasNotOkStatus(cmd, r))
-                    return False
+                    break
 
-                self.CONNECTION_STATUS.clear()
+                res = self._handleWpas(pbc_mode=pbc_mode)
+
+                if not res or self.CONNECTION_STATUS.STATUS in {'WSC_NACK', 'GOT_PSK', 'WPS_FAIL'}:
+                    break
+
+                if self.CONNECTION_STATUS.STATUS == 'WPS_TIMEOUT':
+                    elapsed = int(time.time() - wps_start_time)
+
+                    logger.warning(f'Received WPS-timeout after {elapsed} seconds')
+
+                    try:
+                        self.WPAS.terminate()
+                        self.WPAS.wait(timeout=2)
+                    except subprocess.TimeoutExpired:
+                        self.WPAS.kill()
+
+                    self._initWpaSupplicant()
+                    time.sleep(1) # Brief delay before retry
+
+                    # Resend the WPS command
+                    r = self._sendAndReceive(cmd)
+                    if 'OK' not in r:
+                        self.CONNECTION_STATUS.STATUS = 'WPS_FAIL'
+                        logger.error(self._explainWpasNotOkStatus(cmd, r))
+                        return False
+
+                    self.CONNECTION_STATUS.clear()
+                    continue
+
+            self._sendOnly('WPS_CANCEL')
+
+            if retry_on_lock and self.CONNECTION_STATUS.IS_LOCKED:
+                logger.warning(f'{bssid} is WPS LOCKED. Retrying in {args.timeout}s…')
+                time.sleep(args.timeout)
                 continue
 
-        self._sendOnly('WPS_CANCEL')
-        return self.CONNECTION_STATUS.STATUS == 'GOT_PSK'
+            return self.CONNECTION_STATUS.STATUS == 'GOT_PSK'
 
     def _cleanup(self):
         """Terminates connections and removes temporary files"""
