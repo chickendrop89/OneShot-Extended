@@ -52,7 +52,7 @@ class Initialize:
     """WPS connection"""
 
     def __init__(self, interface: str):
-        self.INTERFACE    = interface
+        self.INTERFACE = interface
 
         self.CONNECTION_STATUS = ConnectionStatus()
         self.PIXIE_CREDS  = src.wps.pixiewps.Data()
@@ -165,7 +165,7 @@ class Initialize:
             return True
         if args.pixie_dust:
             if self.PIXIE_CREDS.getAll():
-                pin = self.PIXIE_CREDS.runPixieWps(args.show_pixie_cmd, args.pixie_force)
+                pin = self.PIXIE_CREDS.runPixieWps(args.show_pixie, args.pixie_force)
                 if pin:
                     return self.singleConnection(bssid, pin, store_pin_on_fail=True)
                 return False
@@ -373,8 +373,8 @@ class Initialize:
             raise ValueError(f'Invalid {attr} length: expected {expected_len}, got {len(hex_value)}')
         setattr(self.PIXIE_CREDS, attr, hex_value)
 
-        if args.pixie_dust:
-            logger.debug(f'{attr}: {hex_value}')
+        if args.show_pixie:
+            logger.info(f'{attr}: {hex_value}')
 
     def _decode_essid(self, line: str) -> str:
         """Decode ESSID from wpa_supplicant output"""

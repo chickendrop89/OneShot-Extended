@@ -121,9 +121,9 @@ Copyright (C) 2026 chickendrop89
         help='Run Pixiewps with --force option (bruteforce full range)'
     )
     adv_group.add_argument(
-        '-S', '--show-pixie-cmd',
+        '-S', '--show-pixie',
         action='store_true',
-        help='Always print full pixiewps command'
+        help='Print pixiewps command and related data'
     )
     adv_group.add_argument(
         '-I', '--iface-down',
@@ -164,8 +164,8 @@ Copyright (C) 2026 chickendrop89
 
     args = parser.parse_args()
 
-    if (args.pixie_force or args.show_pixie_cmd) and not args.pixie_dust:
-        parser.error('argument -F/--pixie-force and -S/--show-pixie-cmd can only be used with -P/--pixie-dust')
+    if (args.pixie_force or args.show_pixie) and not args.pixie_dust:
+        parser.error('argument -F/--pixie-force and -S/--show-pixie can only be used with -P/--pixie-dust')
 
     if args.delay and not args.bruteforce:
         parser.error('argument -d/--delay can only be used with -B/--bruteforce')

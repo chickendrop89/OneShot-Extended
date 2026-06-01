@@ -55,7 +55,7 @@ Optional arguments:
 
 Advanced Arguments:
   -F, --pixie-force     Run Pixiewps with --force option (bruteforce full range)
-  -S, --show-pixie-cmd  Always print full pixiewps command
+  -S, --show-pixie      Print pixiewps command and related data
   -I, --iface-down      Down network interface when the work is finished
   -M, --mtk-wifi        Activate MediaTek Wi-Fi interface driver on startup and deactivate it on exit
   -D, --dont-touch-settings
