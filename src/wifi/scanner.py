@@ -196,7 +196,7 @@ class WiFiScanner:
         lines = iw_scan_process.stdout.splitlines()
 
         if args.verbose:
-            print(lines)
+            print('\n'.join(lines))
 
         for line in lines:
             if line.startswith('command failed:'):
