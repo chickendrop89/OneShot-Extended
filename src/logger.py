@@ -14,7 +14,9 @@
 import logging
 import sys
 
-class ColorFormatter(logging.Formatter):
+_LOGGER = None
+
+class _ColorFormatter(logging.Formatter):
     """Custom formatter that adds colored log level prefixes"""
 
     COLORS = {
@@ -48,8 +50,7 @@ class ColorFormatter(logging.Formatter):
 
         return super().format(record)
 
-# pylint: disable=invalid-name
-def get_logger(name: str = __name__, level: int = logging.INFO) -> logging.Logger:
+def _getLogger(name: str = __name__, level: int = logging.INFO) -> logging.Logger:
     """Get a configured logger instance"""
 
     logger = logging.getLogger(name)
@@ -60,52 +61,49 @@ def get_logger(name: str = __name__, level: int = logging.INFO) -> logging.Logge
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(level)
 
-        formatter = ColorFormatter(fmt='%(message)s')
+        formatter = _ColorFormatter(fmt='%(message)s')
         handler.setFormatter(formatter)
 
         logger.addHandler(handler)
 
     return logger
 
-_logger = None
-
-# pylint: disable=invalid-name
-def initialize_logging():
+def initializeLogging():
     """Initialize the global logging system"""
 
-    global _logger # pylint: disable=global-statement
+    global _LOGGER # pylint: disable=global-statement
 
-    _logger = get_logger('ose', logging.INFO)
+    _LOGGER = _getLogger('ose', logging.INFO)
 
 def info(message: str):
     """Log an info message"""
 
-    if _logger is None:
-        initialize_logging()
+    if _LOGGER is None:
+        initializeLogging()
 
-    _logger.info(message)
+    _LOGGER.info(message)
 
 def success(message: str):
     """Log a success message (uses [+] prefix)"""
 
-    if _logger is None:
-        initialize_logging()
+    if _LOGGER is None:
+        initializeLogging()
 
     # We need to manually add [+] since logging doesn't have a SUCCESS level
-    _logger.info('[+] %s', message)
+    _LOGGER.info('[+] %s', message)
 
 def warning(message: str):
     """Log a warning message"""
 
-    if _logger is None:
-        initialize_logging()
+    if _LOGGER is None:
+        initializeLogging()
 
-    _logger.warning(message)
+    _LOGGER.warning(message)
 
 def error(message: str):
     """Log an error message"""
 
-    if _logger is None:
-        initialize_logging()
+    if _LOGGER is None:
+        initializeLogging()
 
-    _logger.error(message)
+    _LOGGER.error(message)
