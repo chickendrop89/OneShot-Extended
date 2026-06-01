@@ -145,7 +145,7 @@ def main():
     setupDirectories()
 
     args = src.args.parseArgs()
-    logger.initialize_logging(verbose=args.verbose)
+    logger.initialize_logging()
 
     src.utils.checkRunningProcesses(args.interface)
 

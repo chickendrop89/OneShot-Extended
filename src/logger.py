@@ -26,7 +26,6 @@ class ColorFormatter(logging.Formatter):
     }
 
     LEVEL_PREFIXES = {
-        logging.DEBUG: '[*]',
         logging.INFO: '[*]',
         logging.WARNING: '[-]',
         logging.ERROR: '[!]',
@@ -71,13 +70,12 @@ def get_logger(name: str = __name__, level: int = logging.INFO) -> logging.Logge
 _logger = None
 
 # pylint: disable=invalid-name
-def initialize_logging(verbose: bool = False):
+def initialize_logging():
     """Initialize the global logging system"""
 
     global _logger # pylint: disable=global-statement
-    level = logging.DEBUG if verbose else logging.INFO
 
-    _logger = get_logger('ose', level)
+    _logger = get_logger('ose', logging.INFO)
 
 def info(message: str):
     """Log an info message"""
@@ -111,11 +109,3 @@ def error(message: str):
         initialize_logging()
 
     _logger.error(message)
-
-def debug(message: str):
-    """Log a debug message"""
-
-    if _logger is None:
-        initialize_logging()
-
-    _logger.debug(message)
