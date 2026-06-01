@@ -405,7 +405,7 @@ class Initialize:
             cmd = f'WPS_REG {bssid} {pin}'
 
         if bssid:
-            self.PIXIE_CREDS.BSSID = bssid.replace(':', '').upper()
+            self.PIXIE_CREDS.BSSID = bssid.upper()
 
         r = self._sendAndReceive(cmd)
 
