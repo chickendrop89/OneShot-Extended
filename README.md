@@ -111,7 +111,7 @@ On termux, running this script for the second time will update the local reposit
  sudo python ose.py -i wlan0 -P
  ```
 
-**Pixie Dust attack:**
+**Online Bruteforce attack:**
  ```shell
  sudo python ose.py -i wlan0 -B
  ```
