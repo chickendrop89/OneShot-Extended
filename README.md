@@ -102,7 +102,7 @@ Advanced Arguments:
 
 **On termux, running this script for the second time will update the local repository.**
  ```shell
- curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/7ee85af5de71dc51c936b89f31778140db3d8a3f/ose_setup.py | bash
+ curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/9c7664d71f2b502dc8fd7405f7cfabedc2088c85/ose_setup.py | bash
  ```
 
 ## Quick start
