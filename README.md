@@ -72,13 +72,13 @@ Advanced Arguments:
 
  Use this script to install requirements, download the repository, and put `ose.py` to path:
  ```shell
- curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/4d9b5401b4d46fef52a71d14ca470527e73e7033/ose_setup.py | bash
+ curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/9c7664d71f2b502dc8fd7405f7cfabedc2088c85/ose_setup.py | bash
  ```
 
  Or do it manually:
  ```shell
  pkg install -y root-repo
- pkg install -y git tsu python wpa-supplicant pixiewps iw openssl iproute2
+ pkg install -y git sudo python wpa-supplicant pixiewps iw openssl iproute2
  ```
 
 **On Linux distributions. Install these packages through your package manager:**
@@ -100,9 +100,9 @@ Advanced Arguments:
  git reset --hard origin/master
  ```
 
-On termux, running this script for the second time will update the local repository.
+**On termux, running this script for the second time will update the local repository.**
  ```shell
- curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/4d9b5401b4d46fef52a71d14ca470527e73e7033/ose_setup.py | bash
+ curl -sL https://gist.githubusercontent.com/chickendrop89/f2ea65c77e3861ac4b586d9001ca8f55/raw/7ee85af5de71dc51c936b89f31778140db3d8a3f/ose_setup.py | bash
  ```
 
 ## Quick start
